@@ -15,6 +15,7 @@ class GenAlgo {
   fitnessComparator: (number, number) => boolean;
   iterationCallback: (number, number) => boolean;
   mutateFunction: any => any;
+  crossoverFunction: (any, any) => { son: any, daughter: any };
   iterationNumber: number;
   mutationProbability: number;
   crossoverProbability: number;
@@ -73,6 +74,17 @@ class GenAlgo {
    */
   setMutateFunction(mutateFunction: any => void) {
     this.mutateFunction = mutateFunction;
+  }
+
+  /**
+   * Set the function called when crossing two individual
+   * @param {[type]} crossoverFunction function that takes two individuals as parameters and return an object containing the son and daughter individual
+   */
+
+  setCrossoverFunction(
+    crossoverFunction: (any, any) => { son: any, daughter: any }
+  ) {
+    this.crossoverFunction = crossoverFunction;
   }
 
   /**
