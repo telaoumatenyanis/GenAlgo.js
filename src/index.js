@@ -59,11 +59,19 @@ class GenAlgo {
   }
 
   /**
-   * Set the function called
-   * @param {[type]} iterationCallback function that takes the best fitness and the time spended for the current iteration and return whether it should keep going or not
+   * Set the function called at the end of an iteration
+   * @param {function} iterationCallback function that takes the best fitness and the time spended for the current iteration and return whether it should keep going or not
    */
   setIterationCallback(iterationCallback: (number, number) => boolean) {
     this.iterationCallback = iterationCallback;
+  }
+
+  /**
+   * Set the function called to mutate an individual
+   * @param {function} mutateFunction function that takes an individual as parameter and returned its mutated version.
+   */
+  setMutateFunction(mutateFunction: any => void) {
+    this.mutateFunction = mutateFunction;
   }
 
   /**
