@@ -1,5 +1,6 @@
 // @flow
 import isNil from "lodash/fp/isNil";
+import greater from "./fitnessComparator/greater";
 
 type Props = {
   iterationNumber: number,
@@ -45,10 +46,19 @@ class GenAlgo {
     this.fitnessEvaluator = fitnessEvaluator;
   }
 
-  setFitnessComparator(fitnessComparator: (number, number) => boolean) {
+  /**
+   * Set the fitness comparator used to compare to fitness
+   * @param {function} fitnessComparator the function used as a fitnessComparator
+   */
+  setFitnessComparator(
+    fitnessComparator: (number, number) => boolean = greater
+  ) {
     this.fitnessComparator = fitnessComparator;
   }
 
+  /**
+   * Check that required parameters are set.
+   */
   _checkParameters() {
     if (isNil(this.seed)) {
       throw new Error("Seed can't be null");
