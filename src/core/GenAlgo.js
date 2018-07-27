@@ -1,5 +1,6 @@
 // @flow
 import isNil from "lodash/fp/isNil";
+import cloneDeep from "lodash/fp/cloneDeep";
 import greater from "../fitnessComparator/greater.js";
 
 type Props = {
@@ -72,7 +73,7 @@ class GenAlgo {
    * Set the function called to mutate an individual
    * @param {function} mutateFunction function that takes an individual as parameter and returned its mutated version.
    */
-  setMutateFunction(mutateFunction: any => void) {
+  setMutateFunction(mutateFunction: any => any) {
     this.mutateFunction = mutateFunction;
   }
 
