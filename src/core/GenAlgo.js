@@ -1,6 +1,9 @@
 // @flow
 import isNil from "lodash/fp/isNil";
 import cloneDeep from "lodash/fp/cloneDeep";
+import orderBy from "lodash/fp/orderBy";
+import map from "lodash/fp/map";
+
 import greater from "../fitnessComparator/greater.js";
 
 type Props = {
@@ -12,16 +15,25 @@ type Props = {
 
 class GenAlgo {
   seed: any[];
+  populationSize: number;
   fitnessEvaluator: any => number;
   fitnessComparator: (number, number) => boolean;
   iterationCallback: (number, number) => boolean;
-  mutateFunction: any => any;
-  crossoverFunction: (any, any) => { son: any, daughter: any };
+  mutationFunction: any => any;
+  crossoverFunction: (any, any) => [any, any];
+  selectSingleFunction: (
+    [{ entity: any, fitness: number }],
+    (number, number) => boolean
+  ) => any;
+  selectPairFunction: (
+    [{ entity: any, fitness: number }],
+    (number, number) => boolean
+  ) => [any, any];
   iterationNumber: number;
   mutationProbability: number;
   crossoverProbability: number;
   spareFittest: boolean;
-  fittestIndividual: any;
+  individuals: any[];
 
   constructor({
     iterationNumber = 1000,
@@ -33,6 +45,7 @@ class GenAlgo {
     this.mutationProbability = mutationProbability;
     this.crossoverProbability = crossoverProbability;
     this.spareFittest = spareFittest;
+    this.individuals = [];
   }
 
   /**
@@ -41,6 +54,7 @@ class GenAlgo {
    */
   setSeed(seed: any[]) {
     this.seed = seed;
+    this.populationSize = this.seed.length;
   }
 
   /**
@@ -71,21 +85,45 @@ class GenAlgo {
 
   /**
    * Set the function called to mutate an individual
-   * @param {function} mutateFunction function that takes an individual as parameter and returned its mutated version.
+   * @param {function} mutationFunction function that takes an individual as parameter and returned its mutated version.
    */
-  setMutateFunction(mutateFunction: any => any) {
-    this.mutateFunction = mutateFunction;
+  setMutationFunction(mutationFunction: any => any) {
+    this.mutationFunction = mutationFunction;
   }
 
   /**
    * Set the function called when crossing two individual
-   * @param {[type]} crossoverFunction function that takes two individuals as parameters and return an object containing the son and daughter individual
+   * @param {function} crossoverFunction function that takes two individuals as parameters and return the two children of the crossover
    */
 
-  setCrossoverFunction(
-    crossoverFunction: (any, any) => { son: any, daughter: any }
-  ) {
+  setCrossoverFunction(crossoverFunction: (any, any) => [any, any]) {
     this.crossoverFunction = crossoverFunction;
+  }
+
+  /**
+   * Set the function called to select a single individual
+   * @param {function} selectSingleFunction function that takes a population and a fitness evaluator and return a single individual
+   */
+  setSelectSingleFunction(
+    selectSingleFunction: (
+      [{ entity: any, fitness: number }],
+      (number, number) => boolean
+    ) => any
+  ) {
+    this.selectSingleFunction = selectSingleFunction;
+  }
+
+  /**
+   * Set the function called to select a pair of individuals
+   * @param {function} selectSingleFunction function that takes a population and a fitness evaluator and return a pair of individuals
+   */
+  setSelectPairFunction(
+    selectPairFunction: (
+      [{ entity: any, fitness: number }],
+      (number, number) => boolean
+    ) => [any, any]
+  ) {
+    this.selectPairFunction = selectPairFunction;
   }
 
   /**
@@ -105,12 +143,76 @@ class GenAlgo {
     }
   }
 
+  _cloneAndSortIndividuals(individuals: any[]) {
+    return orderBy(
+      "fitness",
+      "desc",
+      map(
+        individual => ({
+          entity: cloneDeep(individual),
+          fitness: this.fitnessEvaluator(individual)
+        }),
+        individuals
+      )
+    );
+  }
+
+  /**
+   * Mutate individual depending on mutation probability
+   * @param  {*} individual the individual to mutate
+   * @return {*}            the mutated individual
+   */
+  _mutateIndividual(individual: any) {
+    return Math.random() <= this.mutationProbability &&
+      !isNil(this.mutationFunction)
+      ? this.mutationFunction(cloneDeep(individual))
+      : individual;
+  }
+
   /**
    * Start the genetic algorithm if the required parameters has been set
    */
   start() {
     this._checkParameters();
 
-    while (this.iterationCallback()) {}
+    this.individuals = map(individual => cloneDeep(individual), this.seed);
+
+    while (this.iterationCallback()) {
+      const population = this._cloneAndSortIndividuals(this.individuals);
+
+      const newPopulation = [];
+
+      if (this.spareFittest) {
+        newPopulation.push(population[0].entity);
+      }
+
+      while (newPopulation.length < this.populationSize) {
+        if (
+          !isNil(this.crossoverFunction) && // if crossoverFunction exists
+          newPopulation.length + 1 < this.populationSize && // population can't exceed initial size
+          Math.random() <= this.crossoverProbability // crossover happens
+        ) {
+          const parents = this.selectPairFunction(
+            population,
+            this.fitnessComparator
+          );
+
+          const children = map(
+            child => this._mutateIndividual(child),
+            this.crossoverFunction(cloneDeep(parents[0]), cloneDeep(parents[1]))
+          );
+
+          newPopulation.push(children[0], children[1]);
+        } else {
+          newPopulation.push(
+            this._mutateIndividual(
+              this.selectSingleFunction(population, this.fitnessComparator)
+            )
+          );
+        }
+      }
+
+      this.individuals = newPopulation;
+    }
   }
 }
