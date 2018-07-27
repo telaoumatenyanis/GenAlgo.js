@@ -1,6 +1,6 @@
 /**
  * Compare two individuals and return the best one
- * @param  {*[]} population              population of the iteration
+ * @param  {[{entity:*, fitness:number}]} population              population of the iteration
  * @param  {function} fitnessComparator  function used to compare the individuals
  * @return {*}                           the best of the two inviduals
  */
