@@ -1,11 +1,32 @@
 // @flow
 import isNil from "lodash/fp/isNil";
 
+type Props = {
+  iterationNumber: number,
+  mutationProbability: number,
+  crossoverProbability: number,
+  spareFittest: boolean
+};
+
 class GenAlgo {
   seed: any[];
   fitnessEvaluator: any => number;
+  iterationNumber: number;
+  mutationProbability: number;
+  crossoverProbability: number;
+  spareFittest: boolean;
 
-  constructor() {}
+  constructor({
+    iterationNumber = 1000,
+    mutationProbability = 0.2,
+    crossoverProbability = 0.8,
+    spareFittest = true
+  }) {
+    this.iterationNumber = iterationNumber;
+    this.mutationProbability = mutationProbability;
+    this.crossoverProbability = crossoverProbability;
+    this.spareFittest = spareFittest;
+  }
 
   /**
    * Set the list of individuals
@@ -23,6 +44,9 @@ class GenAlgo {
     this.fitnessEvaluator = fitnessEvaluator;
   }
 
+  /**
+   * Start the genetic algorithm if the required parameters has been set
+   */
   start() {
     if (isNil(this.seed)) {
       throw new Error("Seed can't be null");
