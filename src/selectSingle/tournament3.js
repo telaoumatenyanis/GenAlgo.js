@@ -20,3 +20,5 @@ function tournament2(
   const best = fitnessComparator(a.fitness, b.fitness) ? a : b;
   return fitnessComparator(best.fitness, c.fitness) ? best.entity : c.entity;
 }
+
+export default tournament3;

@@ -17,3 +17,5 @@ function tournament2(
 
   return fitnessComparator(a.fitness, b.fitness) ? a.entity : b.entity;
 }
+
+export default tournament2;
