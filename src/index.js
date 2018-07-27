@@ -13,10 +13,12 @@ class GenAlgo {
   seed: any[];
   fitnessEvaluator: any => number;
   fitnessComparator: (number, number) => boolean;
+  iterationCallback: (number, number) => boolean;
   iterationNumber: number;
   mutationProbability: number;
   crossoverProbability: number;
   spareFittest: boolean;
+  fittestIndividual: any;
 
   constructor({
     iterationNumber = 1000,
@@ -40,7 +42,7 @@ class GenAlgo {
 
   /**
    * Set the fitness evaluator used to compute the fitness of an individual
-   * @param {function} fitnessEvaluator the function used as a fitnessEvaluator
+   * @param {function} fitnessEvaluator the function used as a fitnessEvaluator, should take an individual and return a fitness
    */
   setFitnessEvaluator(fitnessEvaluator: any => number) {
     this.fitnessEvaluator = fitnessEvaluator;
@@ -48,12 +50,20 @@ class GenAlgo {
 
   /**
    * Set the fitness comparator used to compare to fitness
-   * @param {function} fitnessComparator the function used as a fitnessComparator
+   * @param {function} fitnessComparator the function used as a fitnessComparator, should take two numbers and return a boolean
    */
   setFitnessComparator(
     fitnessComparator: (number, number) => boolean = greater
   ) {
     this.fitnessComparator = fitnessComparator;
+  }
+
+  /**
+   * Set the function called
+   * @param {[type]} iterationCallback function that takes the best fitness and the time spended for the current iteration and return whether it should keep going or not
+   */
+  setIterationCallback(iterationCallback: (number, number) => boolean) {
+    this.iterationCallback = iterationCallback;
   }
 
   /**
@@ -67,6 +77,10 @@ class GenAlgo {
     if (isNil(this.fitnessEvaluator)) {
       throw new Error("Fitness evaluator can't be null");
     }
+
+    if (isNil(this.iterationCallback)) {
+      throw new Error("Iteration callback can't be null");
+    }
   }
 
   /**
@@ -74,5 +88,7 @@ class GenAlgo {
    */
   start() {
     this._checkParameters();
+
+    while (this.iterationCallback()) {}
   }
 }
