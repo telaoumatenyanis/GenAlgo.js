@@ -1,6 +1,6 @@
 // @flow
 import isNil from "lodash/fp/isNil";
-import greater from "./fitnessComparator/greater";
+import greater from "./fitnessComparator/greater.js";
 
 type Props = {
   iterationNumber: number,
