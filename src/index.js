@@ -11,6 +11,7 @@ type Props = {
 class GenAlgo {
   seed: any[];
   fitnessEvaluator: any => number;
+  fitnessComparator: (number, number) => boolean;
   iterationNumber: number;
   mutationProbability: number;
   crossoverProbability: number;
@@ -44,10 +45,11 @@ class GenAlgo {
     this.fitnessEvaluator = fitnessEvaluator;
   }
 
-  /**
-   * Start the genetic algorithm if the required parameters has been set
-   */
-  start() {
+  setFitnessComparator(fitnessComparator: (number, number) => boolean) {
+    this.fitnessComparator = fitnessComparator;
+  }
+
+  _checkParameters() {
     if (isNil(this.seed)) {
       throw new Error("Seed can't be null");
     }
@@ -55,5 +57,12 @@ class GenAlgo {
     if (isNil(this.fitnessEvaluator)) {
       throw new Error("Fitness evaluator can't be null");
     }
+  }
+
+  /**
+   * Start the genetic algorithm if the required parameters has been set
+   */
+  start() {
+    this._checkParameters();
   }
 }
