@@ -5,15 +5,23 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build:babel": "babel src -d dist"
+    "build:babel": "babel src -d dist",
+    "flow": "flow"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/telaoumatenyanis/GenAlgo.js.git"
   },
-  "keywords": ["Genetic", "Algorithm", "Javascript", "Heuristic"],
+  "keywords": [
+    "Genetic",
+    "Algorithm",
+    "Javascript",
+    "Heuristic"
+  ],
   "babel": {
-    "presets": ["./.babelrc.js"]
+    "presets": [
+      "./.babelrc.js"
+    ]
   },
   "author": "Telaoumaten Yanis",
   "license": "MIT",
@@ -26,7 +34,10 @@
     "babel-core": "^6.26.3",
     "babel-preset-env": "^1.7.0",
     "babel-preset-flow": "^6.23.0",
-    "babel-preset-stage-2": "^6.24.1"
+    "babel-preset-stage-2": "^6.24.1",
+    "flow-bin": "^0.77.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "lodash": "^4.17.10"
+  }
 }
