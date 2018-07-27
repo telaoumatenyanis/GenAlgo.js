@@ -14,6 +14,7 @@ class GenAlgo {
   fitnessEvaluator: any => number;
   fitnessComparator: (number, number) => boolean;
   iterationCallback: (number, number) => boolean;
+  mutateFunction: any => any;
   iterationNumber: number;
   mutationProbability: number;
   crossoverProbability: number;
