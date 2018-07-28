@@ -199,6 +199,10 @@ class GenAlgo {
     this.individuals = map(individual => cloneDeep(individual), this.seed);
 
     while (this.iterationCallback()) {
+      if (!isNil(this.selectSingleFunction.index)) {
+        this.selectSingleFunction.index = 0;
+      }
+
       const population = this._cloneAndSortIndividuals(this.individuals);
 
       const newPopulation = [];
