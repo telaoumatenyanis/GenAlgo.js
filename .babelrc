@@ -1,0 +1,5 @@
+{
+  "comments": false,
+  "plugins": ["transform-runtime"],
+  "presets": ["env", "flow", "stage-2"]
+}
