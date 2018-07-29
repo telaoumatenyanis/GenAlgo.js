@@ -20,7 +20,7 @@ function tournament3(
   const best = fitnessComparator(individualA.fitness, individualB.fitness)
     ? individualA
     : individualB;
-  return fitnessComparator(best.fitness, c.fitness)
+  return fitnessComparator(best.fitness, individualC.fitness)
     ? best.entity
     : individualC.entity;
 }

@@ -1,7 +1,7 @@
-import tournament2 from "../tournament2.js";
+import tournament3 from "../tournament3.js";
 import stubRandom from "../../utils/testing/stubRandom";
 
-it("return the best individuals of two tournament2, greater", () => {
+it("return the best individuals of the tournament3, greater", () => {
   jest.spyOn(Math, "random").mockImplementation(
     stubRandom(0.25, index => {
       return index * 1.5;
@@ -18,19 +18,15 @@ it("return the best individuals of two tournament2, greater", () => {
     return first > second;
   };
 
-  const firstTournamentSurvivor = tournament2(population, fitnessComparator);
+  const firstTournamentSurvivor = tournament3(population, fitnessComparator);
 
   expect(firstTournamentSurvivor).toEqual("best");
-
-  const secondTournamentSurvivor = tournament2(population, fitnessComparator);
-
-  expect(secondTournamentSurvivor).toEqual("almostGood");
 });
 
-it("return the best individuals of two tournament2, lesser", () => {
+it("return the best individuals of the tournament3, lesser", () => {
   jest.spyOn(Math, "random").mockImplementation(
-    stubRandom(0.25, index => {
-      return index * 1.5;
+    stubRandom(0.2, index => {
+      return index * 2;
     })
   );
 
@@ -44,11 +40,7 @@ it("return the best individuals of two tournament2, lesser", () => {
     return first < second;
   };
 
-  const firstTournamentSurvivor = tournament2(population, fitnessComparator);
+  const firstTournamentSurvivor = tournament3(population, fitnessComparator);
 
-  expect(firstTournamentSurvivor).toEqual("almostGood");
-
-  const secondTournamentSurvivor = tournament2(population, fitnessComparator);
-
-  expect(secondTournamentSurvivor).toEqual("bad");
+  expect(firstTournamentSurvivor).toEqual("bad");
 });
