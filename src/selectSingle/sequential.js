@@ -6,7 +6,7 @@ function sequential() {
    * @return {*}            next individual of the sequence
    */
   return function(population: [{ entity: any, fitness: number }]) {
-    return population[index % population.length].entity;
+    return population[index++ % population.length].entity;
   };
 }
 
