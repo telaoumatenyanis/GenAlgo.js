@@ -15,7 +15,9 @@ function tournament2(
   const individualB =
     population[Math.floor(Math.random() * numberOfIndividuals)];
 
-  return fitnessComparator(a.fitness, b.fitness) ? a.entity : b.entity;
+  return fitnessComparator(individualA.fitness, individualB.fitness)
+    ? individualA.entity
+    : individualB.entity;
 }
 
 export default tournament2;

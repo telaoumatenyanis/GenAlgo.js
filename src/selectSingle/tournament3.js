@@ -4,7 +4,7 @@
  * @param  {function} fitnessComparator               function used to compare the individuals
  * @return {*}                                        the best of the three inviduals
  */
-function tournament2(
+function tournament3(
   population: [{ entity: any, fitness: number }],
   fitnessComparator: (number, number) => boolean
 ) {
@@ -17,8 +17,12 @@ function tournament2(
   const individualC =
     population[Math.floor(Math.random() * numberOfIndividuals)];
 
-  const best = fitnessComparator(a.fitness, b.fitness) ? a : b;
-  return fitnessComparator(best.fitness, c.fitness) ? best.entity : c.entity;
+  const best = fitnessComparator(individualA.fitness, individualB.fitness)
+    ? individualA
+    : individualB;
+  return fitnessComparator(best.fitness, c.fitness)
+    ? best.entity
+    : individualC.entity;
 }
 
 export default tournament3;
