@@ -2,7 +2,7 @@ import sequential from "../sequential.js";
 import stubRandom from "../../utils/testing/stubRandom";
 import map from "lodash/fp/map";
 
-it("return the first two individual", () => {
+it("return a sequence containing all the population", () => {
   const population = [
     { entity: "best", fitness: 3 },
     { entity: "almostGoodFirst", fitness: 2 },
