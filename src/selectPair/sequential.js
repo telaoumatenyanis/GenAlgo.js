@@ -1,4 +1,4 @@
-import sequentialSingle from "../selectSingle/randomLinearRank.js";
+import sequentialSingle from "../selectSingle/sequential.js";
 
 /**
  * Select a pair of two individual in the sequence

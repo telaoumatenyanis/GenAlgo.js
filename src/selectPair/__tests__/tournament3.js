@@ -1,8 +1,8 @@
 import tournament3 from "../tournament3.js";
 import stubRandom from "../../utils/testing/stubRandom";
 
-it("return the best individuals of the tournament3, greater comparator", () => {
-  stubRandom([0, 0.4, 0.8]);
+it("return the best pair individuals of two tournament3, greater comparator", () => {
+  stubRandom([0, 0.4, 0.8, 0.4, 0.4, 0.8]);
 
   const population = [
     { entity: "best", fitness: 3 },
@@ -14,13 +14,13 @@ it("return the best individuals of the tournament3, greater comparator", () => {
     return first > second;
   };
 
-  const firstTournamentSurvivor = tournament3(population, fitnessComparator);
+  const tournamentSurvivors = tournament3(population, fitnessComparator);
 
-  expect(firstTournamentSurvivor).toEqual("best");
+  expect(tournamentSurvivors).toEqual(["best", "almostGood"]);
 });
 
-it("return the best individuals of the tournament3, lesser comparator", () => {
-  stubRandom([0, 0.4, 0.8]);
+it("return the best pair of individuals of two tournament3, lesser comparator", () => {
+  stubRandom([0, 0.4, 0.8, 0, 0.4, 0.4]);
 
   const population = [
     { entity: "best", fitness: 3 },
@@ -32,7 +32,7 @@ it("return the best individuals of the tournament3, lesser comparator", () => {
     return first < second;
   };
 
-  const firstTournamentSurvivor = tournament3(population, fitnessComparator);
+  const tournamentSurvivors = tournament3(population, fitnessComparator);
 
-  expect(firstTournamentSurvivor).toEqual("bad");
+  expect(tournamentSurvivors).toEqual(["bad", "almostGood"]);
 });

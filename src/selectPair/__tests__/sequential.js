@@ -1,5 +1,4 @@
 import sequential from "../sequential.js";
-import map from "lodash/fp/map";
 
 it("return a sequence containing all the population", () => {
   const population = [
@@ -10,15 +9,7 @@ it("return a sequence containing all the population", () => {
     { entity: "badSecond", fitness: 1 }
   ];
 
-  const sequence = map(() => {
-    return sequential(population);
-  }, population);
+  const followingIndividuals = sequential(population);
 
-  expect(sequence).toEqual([
-    "best",
-    "almostGoodFirst",
-    "almostGoodSecond",
-    "badFirst",
-    "badSecond"
-  ]);
+  expect(followingIndividuals).toEqual(["best", "almostGoodFirst"]);
 });

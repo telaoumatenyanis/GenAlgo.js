@@ -1,6 +1,5 @@
 import randomLinearRank, { linearRank } from "../randomLinearRank.js";
 import stubRandom from "../../utils/testing/stubRandom";
-// import map from "lodash/fp/map";
 
 it("Verify if the linear rank is correct", () => {
   const population = [
@@ -34,7 +33,7 @@ it("Verify if the linear rank is correct", () => {
 });
 
 it("return the 4th individual of the population", () => {
-  jest.spyOn(Math, "random").mockImplementation(() => 0.35);
+  stubRandom([0.35]);
 
   const population = [
     { entity: "thefittest", fitness: 4 },
