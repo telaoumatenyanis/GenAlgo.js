@@ -4,7 +4,7 @@ import tournament3 from "..//singleSelector/tournament3.js";
 import tournament3Pair from "../pairSelector/tournament3.js";
 import rangeStep from "lodash/fp/rangeStep";
 
-function tryToFindFunctionExtremum(func: number => number, min: boolean) {
+function tryToFindPolynomialExtremum(func: number => number, min: boolean) {
   const algo = new GenAlgo({
     mutationProbability: 0.2,
     crossoverProbability: 0.8,
@@ -51,7 +51,7 @@ function tryToFindFunctionExtremum(func: number => number, min: boolean) {
 it("Minimum of (x+50)^2-5000*e^(-50*(x-5)^2)-54*cos((x-5)*5)-100*cos((x-5)*0.5) : should be near 5 in perfect case, near -45 in good cases", () => {
   try {
     expect(
-      tryToFindFunctionExtremum(number => {
+      tryToFindPolynomialExtremum(number => {
         return (
           (number + 50) ** 2 -
           5000 * Math.exp(-50 * (number - 5) ** 2) -
@@ -68,7 +68,7 @@ it("Minimum of (x+50)^2-5000*e^(-50*(x-5)^2)-54*cos((x-5)*5)-100*cos((x-5)*0.5) 
 it("Maximum of -9x^4-3x^3 : should be near -0.25", () => {
   try {
     expect(
-      tryToFindFunctionExtremum(number => {
+      tryToFindPolynomialExtremum(number => {
         return -9 * number ** 4 - 3 * number ** 3;
       })
     ).toBeCloseTo(-0.25, 1);

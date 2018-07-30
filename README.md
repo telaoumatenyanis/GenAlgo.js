@@ -25,7 +25,7 @@ Website with examples in progress (polynomial extrema, bin packing, maybe travel
 ### Creation of a GenAlgo object
 
 ```
-const functionExtremum = new GenAlgo({})
+const algo = new GenAlgo({})
 ```
 
 #### Parameters
@@ -66,9 +66,11 @@ Select a single individual.
 
 ##### Pair Selectors
 
+Select a pair of individuals.
+
 | Selector         | Description                                                   |
 | ---------------- | ------------------------------------------------------------- |
-| fittestRandom    | select the fittest individual                                 |
+| fittestRandom    | select a pair composed of the fittest and a random individual |
 | random           | select a pair of random individuals                           |
 | randomLinearRank | select a pair of random individuals based on a linear ranking |
 | sequential       | select a pair of individuals in the order of the array        |
@@ -83,3 +85,58 @@ GenAlgo allows you to maximize or minimize the fitness by setting the comparator
 | ---------- | -------------------- |
 | greater    | maximize the fitness |
 | lesser     | minimize the fitness |
+
+## Polynomial extremum example
+
+```
+function tryToFindPolynomialExtremum(func: number => number, min: boolean) {
+
+  // Create a GenAlgo object with simple parameters
+  const algo = new GenAlgo({
+    mutationProbability: 0.2,
+    crossoverProbability: 0.8,
+    iterationNumber: 100
+  });
+
+  // Function used to mutate an individual
+  const mutation = number => {
+    return number + Math.random();
+  };
+
+  // Function used to crossover two individuals
+  const crossover = (number1, number2) => {
+    return [(number1 + number2) / 2, number1 + number2];
+  };
+
+  // Will be called at each iteration
+  const iterationCallback = ({ bestFitness, elapsedTime, iterationNumber }) => {
+    console.log("Iteration " + iterationNumber);
+    console.log("Best fitness : " + bestFitness);
+    console.log("Elapsed time : " + elapsedTime);
+    return true;
+  };
+
+  // Seed generation
+  const seed = rangeStep(10, -10000, 10000);
+
+  algo.setSeed(seed);
+
+  algo.setFitnessEvaluator(func);
+
+  if (min) {
+    algo.setFitnessComparator(lesser);
+  }
+
+  algo.setMutationFunction(mutation);
+
+  algo.setCrossoverFunction(crossover);
+
+  algo.setSelectSingleFunction(tournament3);
+
+  algo.setSelectPairFunction(tournament3Pair);
+
+  algo.setIterationCallback(iterationCallback);
+
+  algo.start();
+}
+```

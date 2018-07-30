@@ -4,20 +4,25 @@ import tournament3 from "../../src/singleSelector/tournament3.js";
 import tournament3Pair from "../../src/pairSelector/tournament3.js";
 import rangeStep from "lodash/fp/rangeStep";
 
-function tryToFindFunctionExtremum(func: number => number, min: boolean) {
+function tryToFindPolynomialExtremum(func: number => number, min: boolean) {
+  // Create a GenAlgo object with simple parameters
   const algo = new GenAlgo({
     mutationProbability: 0.2,
-    crossoverProbability: 0.8
+    crossoverProbability: 0.8,
+    iterationNumber: 100
   });
 
+  // Function used to mutate an individual
   const mutation = number => {
     return number + Math.random();
   };
 
+  // Function used to crossover two individuals
   const crossover = (number1, number2) => {
     return [(number1 + number2) / 2, number1 + number2];
   };
 
+  // Will be called at each iteration
   const iterationCallback = ({ bestFitness, elapsedTime, iterationNumber }) => {
     console.log("Iteration " + iterationNumber);
     console.log("Best fitness : " + bestFitness);
@@ -25,6 +30,7 @@ function tryToFindFunctionExtremum(func: number => number, min: boolean) {
     return true;
   };
 
+  // Seed generation
   const seed = rangeStep(10, -10000, 10000);
 
   algo.setSeed(seed);
@@ -46,14 +52,12 @@ function tryToFindFunctionExtremum(func: number => number, min: boolean) {
   algo.setIterationCallback(iterationCallback);
 
   algo.start();
-
-  console.log(algo.getIndividuals()[0]);
 }
 
 console.log(
   "Minimum of (x+50)^2-5000*e^(-50*(x-5)^2)-54*cos((x-5)*5)-100*cos((x-5)*0.5) : should be near 5 in perfect case, near -45 in good cases"
 );
-tryToFindFunctionExtremum(number => {
+tryToFindPolynomialExtremum(number => {
   return (
     (number + 50) ** 2 -
     5000 * Math.exp(-50 * (number - 5) ** 2) -
@@ -63,6 +67,6 @@ tryToFindFunctionExtremum(number => {
 }, true);
 
 console.log("Maximum of -9x^4-3x^3 : should be near -0.25");
-tryToFindFunctionExtremum(number => {
+tryToFindPolynomialExtremum(number => {
   return -9 * number ** 4 - 3 * number ** 3;
 });
