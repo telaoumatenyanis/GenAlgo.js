@@ -6,7 +6,9 @@ import fittestSingle from "../selectSingle/fittest.js";
  * @param   population                         population of the iteration
  * @return                                     a pair composed of the fittest and a random individual
  */
-function fittestRandom(population: Array<{ entity: any, fitness: number }>) {
+function fittestRandom(
+  population: Array<{ entity: any, fitness: number }>
+): [any, any] {
   return [fittestSingle(population), randomSingle(population)];
 }
 

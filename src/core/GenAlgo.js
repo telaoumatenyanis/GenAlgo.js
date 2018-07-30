@@ -52,7 +52,7 @@ class GenAlgo {
    * Set the list of individuals
    * @param seed list of individuals
    */
-  setSeed(seed: any[]) {
+  setSeed(seed: any[]): void {
     this.seed = seed;
     this.populationSize = this.seed.length;
   }
@@ -61,7 +61,7 @@ class GenAlgo {
    * Set the fitness evaluator used to compute the fitness of an individual
    * @param fitnessEvaluator the function used as a fitnessEvaluator, should take an individual and return a fitness
    */
-  setFitnessEvaluator(fitnessEvaluator: any => number) {
+  setFitnessEvaluator(fitnessEvaluator: any => number): void {
     this.fitnessEvaluator = fitnessEvaluator;
   }
 
@@ -71,7 +71,7 @@ class GenAlgo {
    */
   setFitnessComparator(
     fitnessComparator: (number, number) => boolean = greater
-  ) {
+  ): void {
     this.fitnessComparator = fitnessComparator;
   }
 
@@ -79,7 +79,7 @@ class GenAlgo {
    * Set the function called at the end of an iteration
    * @param iterationCallback function that takes the best fitness and the time spended for the current iteration and return whether it should keep going or not
    */
-  setIterationCallback(iterationCallback: (number, number) => boolean) {
+  setIterationCallback(iterationCallback: (number, number) => boolean): void {
     this.iterationCallback = iterationCallback;
   }
 
@@ -87,7 +87,7 @@ class GenAlgo {
    * Set the function called to mutate an individual
    * @param  mutationFunction function that takes an individual as parameter and returned its mutated version.
    */
-  setMutationFunction(mutationFunction: any => any) {
+  setMutationFunction(mutationFunction: any => any): void {
     this.mutationFunction = mutationFunction;
   }
 
@@ -96,7 +96,7 @@ class GenAlgo {
    * @param crossoverFunction function that takes two individuals as parameters and return the two children of the crossover
    */
 
-  setCrossoverFunction(crossoverFunction: (any, any) => [any, any]) {
+  setCrossoverFunction(crossoverFunction: (any, any) => [any, any]): void {
     this.crossoverFunction = crossoverFunction;
   }
 
@@ -109,7 +109,7 @@ class GenAlgo {
       Array<{ entity: any, fitness: number }>,
       (number, number) => boolean
     ) => any
-  ) {
+  ): void {
     this.selectSingleFunction = selectSingleFunction;
   }
 
@@ -122,14 +122,14 @@ class GenAlgo {
       Array<{ entity: any, fitness: number }>,
       (number, number) => boolean
     ) => [any, any]
-  ) {
+  ): void {
     this.selectPairFunction = selectPairFunction;
   }
 
   /**
    * Check that required parameters are set.
    */
-  _checkParameters() {
+  _checkParameters(): void {
     if (isNil(this.seed)) {
       throw new Error("Seed can't be null");
     }
@@ -164,7 +164,9 @@ class GenAlgo {
     }
   }
 
-  _cloneAndSortIndividuals(individuals: any[]) {
+  _cloneAndSortIndividuals(
+    individuals: any[]
+  ): Array<{ entity: any, fitness: number }> {
     return orderBy(
       "fitness",
       "desc",
@@ -183,7 +185,7 @@ class GenAlgo {
    * @param  individual the individual to mutate
    * @return            the mutated individual
    */
-  _mutateIndividual(individual: any) {
+  _mutateIndividual(individual: any): any {
     return Math.random() <= this.mutationProbability &&
       !isNil(this.mutationFunction)
       ? this.mutationFunction(cloneDeep(individual))
@@ -193,7 +195,7 @@ class GenAlgo {
   /**
    * Start the genetic algorithm if the required parameters has been set
    */
-  start() {
+  start(): void {
     this._checkParameters();
 
     this.individuals = map(individual => cloneDeep(individual), this.seed);

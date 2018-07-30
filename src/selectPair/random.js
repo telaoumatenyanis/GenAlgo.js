@@ -5,7 +5,9 @@ import randomSingle from "../selectSingle/random.js";
  * @param   population                         population of the iteration
  * @return                                     a random pair of individual
  */
-function random(population: Array<{ entity: any, fitness: number }>) {
+function random(
+  population: Array<{ entity: any, fitness: number }>
+): [any, any] {
   return [randomSingle(population), randomSingle(population)];
 }
 

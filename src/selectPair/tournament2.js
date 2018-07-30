@@ -9,7 +9,7 @@ import tournament2Single from "../selectSingle/tournament2.js";
 function tournament2(
   population: Array<{ entity: any, fitness: number }>,
   fitnessComparator: (number, number) => boolean
-) {
+): [any, any] {
   return [
     tournament2Single(population, fitnessComparator),
     tournament2Single(population, fitnessComparator)

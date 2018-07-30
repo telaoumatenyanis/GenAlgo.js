@@ -7,7 +7,7 @@
 function tournament3(
   population: Array<{ entity: any, fitness: number }>,
   fitnessComparator: (number, number) => boolean
-) {
+): any {
   const numberOfIndividuals = population.length;
 
   const individualA =

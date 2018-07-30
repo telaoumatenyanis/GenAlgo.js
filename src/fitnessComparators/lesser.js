@@ -6,7 +6,7 @@
  * @param   fitness2 second fitness
  * @return           true if fitness 1 is lesser than fitness2
  */
-function lesser(fitness1: number, fitness2: number) {
+function lesser(fitness1: number, fitness2: number): boolean {
   return fitness1 < fitness2;
 }
 
