@@ -299,12 +299,7 @@ class GenAlgo {
       }) &&
       iterationNumber < this.iterationNumber
     ) {
-      if (!isNil(this.selectSingleFunction.index)) {
-        this.selectSingleFunction.index = 0;
-      }
-      if (!isNil(this.selectSingleFunction.ranks)) {
-        this.selectSingleFunction.ranks = [];
-      }
+      this.selectSingleFunction.args = {};
 
       population = this._cloneAndSortIndividuals(this.individuals);
 

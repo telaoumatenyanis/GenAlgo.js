@@ -52,3 +52,42 @@ it("return the 4th individual of the population", () => {
 
   expect(chosenIndividual).toEqual("almostGoodSecond");
 });
+
+it("return the 4th individual of the population, change the population, reset the linear rank, and return the second", () => {
+  stubRandom([0.35, 0.35]);
+
+  try {
+    const population = [
+      { entity: "thefittest", fitness: 4 },
+      { entity: "best", fitness: 3 },
+      { entity: "almostGoodFirst", fitness: 2 },
+      { entity: "almostGoodSecond", fitness: 2 },
+      { entity: "almostGoodThird", fitness: 2 },
+      { entity: "almostGoodFourth", fitness: 2 },
+      { entity: "badFirst", fitness: 1 },
+      { entity: "badSecond", fitness: 1 },
+      { entity: "badThird", fitness: 1 },
+      { entity: "badFourth", fitness: 1 }
+    ];
+
+    const chosenIndividual = randomLinearRank(population);
+
+    expect(chosenIndividual).toEqual("almostGoodSecond");
+
+    randomLinearRank.args = null;
+
+    const population2 = [
+      { entity: "thefittest", fitness: 4 },
+      { entity: "best", fitness: 3 },
+      { entity: "almostGoodFirst", fitness: 2 },
+      { entity: "badFirst", fitness: 1 },
+      { entity: "badFourth", fitness: 1 }
+    ];
+
+    const secondChosenIndividual = randomLinearRank(population2);
+
+    expect(secondChosenIndividual).toEqual("best");
+  } catch (e) {
+    console.log(e);
+  }
+});
