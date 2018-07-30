@@ -2,11 +2,7 @@ import tournament3 from "../tournament3.js";
 import stubRandom from "../../utils/testing/stubRandom";
 
 it("return the best individuals of the tournament3, greater", () => {
-  jest.spyOn(Math, "random").mockImplementation(
-    stubRandom(0.25, index => {
-      return index * 1.5;
-    })
-  );
+  stubRandom([0, 0.4, 0.8]);
 
   const population = [
     { entity: "best", fitness: 3 },
@@ -24,11 +20,7 @@ it("return the best individuals of the tournament3, greater", () => {
 });
 
 it("return the best individuals of the tournament3, lesser", () => {
-  jest.spyOn(Math, "random").mockImplementation(
-    stubRandom(0.2, index => {
-      return index * 2;
-    })
-  );
+  stubRandom([0, 0.4, 0.8]);
 
   const population = [
     { entity: "best", fitness: 3 },

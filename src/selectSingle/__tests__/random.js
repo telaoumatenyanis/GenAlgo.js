@@ -2,11 +2,7 @@ import random from "../random.js";
 import stubRandom from "../../utils/testing/stubRandom";
 
 it("return the first two individual", () => {
-  jest.spyOn(Math, "random").mockImplementation(
-    stubRandom(0.2, index => {
-      return index * 2;
-    })
-  );
+  stubRandom([0, 0.4, 0.8]);
 
   const population = [
     { entity: "best", fitness: 3 },
