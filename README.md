@@ -1,5 +1,7 @@
 # GenAlgo.js
 
+![logo](./public/templogo.png)
+
 Genetic and evolutionary algorithms in Javascript made simple !
 
 ## Motivation
