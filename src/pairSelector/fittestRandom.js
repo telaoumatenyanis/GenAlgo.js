@@ -1,5 +1,5 @@
-import randomSingle from "../selectSingle/random.js";
-import fittestSingle from "../selectSingle/fittest.js";
+import randomSingle from "../singleSelector/random.js";
+import fittestSingle from "../singleSelector/fittest.js";
 
 /**
  * Return a pair composed of the fittest and a random individual of the population

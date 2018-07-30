@@ -1,11 +1,14 @@
 import GenAlgo from "../../src/core/GenAlgo.js";
-import lesser from "../../src/fitnessComparators/lesser.js";
-import tournament3 from "../../src/selectSingle/tournament3.js";
-import tournament3Pair from "../../src/selectPair/tournament3.js";
+import lesser from "../../src/fitnessComparator/lesser.js";
+import tournament3 from "../../src/singleSelector/tournament3.js";
+import tournament3Pair from "../../src/pairSelector/tournament3.js";
 import rangeStep from "lodash/fp/rangeStep";
 
 function tryToFindFunctionExtremum(func: number => number, min: boolean) {
-  const algo = new GenAlgo({});
+  const algo = new GenAlgo({
+    mutationProbability: 0.2,
+    crossoverProbability: 0.8
+  });
 
   const mutation = number => {
     return number + Math.random();
@@ -15,7 +18,10 @@ function tryToFindFunctionExtremum(func: number => number, min: boolean) {
     return [(number1 + number2) / 2, number1 + number2];
   };
 
-  const iterationCallback = (fittest, time) => {
+  const iterationCallback = ({ bestFitness, elapsedTime, iterationNumber }) => {
+    console.log("Iteration " + iterationNumber);
+    console.log("Best fitness : " + bestFitness);
+    console.log("Elapsed time : " + elapsedTime);
     return true;
   };
 

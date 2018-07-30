@@ -1,4 +1,4 @@
-import sequentialSingle from "../selectSingle/sequential.js";
+import sequentialSingle from "../singleSelector/sequential.js";
 
 /**
  * Select a pair of two individual in the sequence

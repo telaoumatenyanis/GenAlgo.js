@@ -1,4 +1,4 @@
-import randomLinearRankSingle from "../selectSingle/randomLinearRank.js";
+import randomLinearRankSingle from "../singleSelector/randomLinearRank.js";
 
 /**
  * Select a pair of two individual according to a linear rank

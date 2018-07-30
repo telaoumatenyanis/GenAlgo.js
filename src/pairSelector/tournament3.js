@@ -1,4 +1,4 @@
-import tournament3Single from "../selectSingle/tournament3.js";
+import tournament3Single from "../singleSelector/tournament3.js";
 
 /**
  * Compare three individuals, two times and return a pair

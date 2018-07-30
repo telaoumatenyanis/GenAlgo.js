@@ -3,10 +3,29 @@ import isNil from "lodash/fp/isNil";
 import cloneDeep from "lodash/fp/cloneDeep";
 import orderBy from "lodash/fp/orderBy";
 import map from "lodash/fp/map";
+import fittest from "../singleSelector/fittest.js";
+import tournament3 from "../pairSelector/tournament3.js";
+import greater from "../fitnessComparator/greater.js";
 
-import greater from "../fitnessComparators/greater.js";
-
-type Props = {
+type Parameters = {
+  seed: any[],
+  fitnessEvaluator: any => number,
+  fitnessComparator: (number, number) => boolean,
+  iterationCallback: ({
+    iterationNumber: number,
+    elapsedTime: number,
+    bestFitness: number
+  }) => boolean,
+  mutationFunction: any => any,
+  crossoverFunction: (any, any) => [any, any],
+  selectSingleFunction: (
+    Array<{ entity: any, fitness: number }>,
+    (number, number) => boolean
+  ) => any,
+  selectPairFunction: (
+    Array<{ entity: any, fitness: number }>,
+    (number, number) => boolean
+  ) => [any, any],
   iterationNumber: number,
   mutationProbability: number,
   crossoverProbability: number,
@@ -18,7 +37,11 @@ class GenAlgo {
   populationSize: number;
   fitnessEvaluator: any => number;
   fitnessComparator: (number, number) => boolean;
-  iterationCallback: (number, number) => boolean;
+  iterationCallback: ({
+    iterationNumber: number,
+    elapsedTime: number,
+    bestFitness: number
+  }) => boolean;
   mutationFunction: any => any;
   crossoverFunction: (any, any) => [any, any];
   selectSingleFunction: (
@@ -37,16 +60,64 @@ class GenAlgo {
 
   constructor({
     iterationNumber = 1000,
-    mutationProbability = 0.2,
-    crossoverProbability = 0.8,
-    spareFittest = true
-  }) {
+    mutationProbability = 0.7,
+    crossoverProbability = 0.2,
+    spareFittest = true,
+    fitnessEvaluator,
+    fitnessComparator = greater,
+    seed,
+    iterationCallback,
+    mutationFunction,
+    crossoverFunction,
+    selectSingleFunction = fittest,
+    selectPairFunction = tournament3
+  }: Parameters) {
     this.iterationNumber = iterationNumber;
     this.mutationProbability = mutationProbability;
     this.crossoverProbability = crossoverProbability;
     this.spareFittest = spareFittest;
-    this.fitnessComparator = greater;
+    this.fitnessEvaluator = fitnessEvaluator;
+    this.fitnessComparator = fitnessComparator;
+    this.seed = seed;
+    this.iterationCallback = iterationCallback;
+    this.mutationFunction = mutationFunction;
+    this.crossoverFunction = crossoverFunction;
+    this.selectSingleFunction = selectSingleFunction;
+    this.selectPairFunction = selectPairFunction;
+
     this.individuals = [];
+  }
+
+  /**
+   * Set the number of iteration to do
+   * @param iterationNumber the number of iteration to do
+   */
+  setIterationNumber(iterationNumber: number): void {
+    this.iterationNumber = iterationNumber;
+  }
+
+  /**
+   * Set the probability for an individual to mutate
+   * @param mutationProbability the probability to mutate
+   */
+  setMutationProbability(mutationProbability: number): void {
+    this.mutationProbability = mutationProbability;
+  }
+
+  /**
+   * Set the probabiltiy for two individual to have children
+   * @param crossoverProbability the probability to have children
+   */
+  setCrossoverProbability(crossoverProbability: number): void {
+    this.crossoverProbability = crossoverProbability;
+  }
+
+  /**
+   * Set whether the fittest individual should always be spared or not
+   * @param spareFittest true if spared, false otherwise
+   */
+  setSpareFittest(spareFittest: boolean): void {
+    this.spareFittest = spareFittest;
   }
 
   /**
@@ -78,7 +149,13 @@ class GenAlgo {
    * Set the function called at the end of an iteration
    * @param iterationCallback function that takes the best fitness and the time spended for the current iteration and return whether it should keep going or not
    */
-  setIterationCallback(iterationCallback: (number, number) => boolean): void {
+  setIterationCallback(
+    iterationCallback: ({
+      iterationNumber: number,
+      elapsedTime: number,
+      bestFitness: number
+    }) => boolean
+  ): void {
     this.iterationCallback = iterationCallback;
   }
 
@@ -123,6 +200,10 @@ class GenAlgo {
     ) => [any, any]
   ): void {
     this.selectPairFunction = selectPairFunction;
+  }
+
+  getIndividuals(): Array<any> {
+    return this.individuals;
   }
 
   /**
@@ -199,10 +280,6 @@ class GenAlgo {
     );
   }
 
-  getIndividuals(): Array<any> {
-    return this.individuals;
-  }
-
   /**
    * Start the genetic algorithm if the required parameters has been set
    */
@@ -215,14 +292,15 @@ class GenAlgo {
 
     const startTime = process.hrtime();
 
-    let numberOfIteration = 0;
+    let iterationNumber = 0;
 
     while (
-      this.iterationCallback(
-        population[0].fitness,
-        this._getElapsedTime(startTime)
-      ) &&
-      numberOfIteration < this.iterationNumber
+      this.iterationCallback({
+        iterationNumber,
+        bestFitness: population[0].fitness,
+        elapsedTime: this._getElapsedTime(startTime)
+      }) &&
+      iterationNumber < this.iterationNumber
     ) {
       if (!isNil(this.selectSingleFunction.index)) {
         this.selectSingleFunction.index = 0;
@@ -267,7 +345,7 @@ class GenAlgo {
 
       this.individuals = newPopulation;
 
-      numberOfIteration++;
+      iterationNumber++;
     }
   }
 }

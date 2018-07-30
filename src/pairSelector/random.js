@@ -1,4 +1,4 @@
-import randomSingle from "../selectSingle/random.js";
+import randomSingle from "../singleSelector/random.js";
 
 /**
  * Return a random pair of individuals of the population
