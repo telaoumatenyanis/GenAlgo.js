@@ -4,7 +4,7 @@ import cloneDeep from "lodash/fp/cloneDeep";
 import orderBy from "lodash/fp/orderBy";
 import map from "lodash/fp/map";
 
-import greater from "../fitnessComparator/greater.js";
+import greater from "../fitnessComparators/greater.js";
 
 type Props = {
   iterationNumber: number,
@@ -45,6 +45,7 @@ class GenAlgo {
     this.mutationProbability = mutationProbability;
     this.crossoverProbability = crossoverProbability;
     this.spareFittest = spareFittest;
+    this.fitnessComparator = greater;
     this.individuals = [];
   }
 
@@ -69,9 +70,7 @@ class GenAlgo {
    * Set the fitness comparator used to compare to fitness
    * @param  fitnessComparator the function used as a fitnessComparator, should take two numbers and return a boolean
    */
-  setFitnessComparator(
-    fitnessComparator: (number, number) => boolean = greater
-  ): void {
+  setFitnessComparator(fitnessComparator: (number, number) => boolean): void {
     this.fitnessComparator = fitnessComparator;
   }
 
@@ -167,17 +166,19 @@ class GenAlgo {
   _cloneAndSortIndividuals(
     individuals: any[]
   ): Array<{ entity: any, fitness: number }> {
-    return orderBy(
-      "fitness",
-      "desc",
-      map(
-        individual => ({
-          entity: cloneDeep(individual),
-          fitness: this.fitnessEvaluator(individual)
-        }),
-        individuals
-      )
-    );
+    return map(
+      individual => ({
+        entity: cloneDeep(individual),
+        fitness: this.fitnessEvaluator(individual)
+      }),
+      individuals
+    ).sort((individualA, individualB) => {
+      if (this.fitnessComparator(individualA.fitness, individualB.fitness)) {
+        return -1;
+      } else {
+        return 1;
+      }
+    });
   }
 
   /**
@@ -196,6 +197,10 @@ class GenAlgo {
     return parseFloat(
       process.hrtime(startTime)[0] + "." + process.hrtime(startTime)[1]
     );
+  }
+
+  getIndividuals(): Array<any> {
+    return this.individuals;
   }
 
   /**
@@ -266,3 +271,5 @@ class GenAlgo {
     }
   }
 }
+
+export default GenAlgo;
