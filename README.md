@@ -1,6 +1,6 @@
 # GenAlgo.js
 
-Genetic algorithm implementation in Javascript.
+Genetic and evolutionary algorithms in Javascript made simple !
 
 ## Motivation
 
@@ -32,20 +32,24 @@ const algo = new GenAlgo({})
 
 All of the following parameters can be set during the GenAlgo object creation, or using the corresponding setter.
 
-| Parameter            |                                      Type                                      |   Default   | Description                                                                                                                                        |
-| -------------------- | :----------------------------------------------------------------------------: | :---------: | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| crossoverFunction    |              (Individual, Individual) => [Individual, Individual]              |  undefined  | function used when crossover of two Individuals occurs                                                                                             |
-| crossoverProbability |                                     number                                     |     0.8     | probability of crossover                                                                                                                           |
-| fitnessComparator    |                          (number, number) => boolean                           |   Greater   | function used to compare two fitness and return whether the first is better or not                                                                 |
-| fitnessEvaluator     |                             (Individual) => number                             |  undefined  | function used to evaluate fitness of an Individual                                                                                                 |
-| iterationCallback    | ({iterationNumber:number, elapsedTime:number, bestFitness: number}) => boolean |    null     | function called after each iteration giving some information to the main program. Should return false if the algorithm has to stop, true otherwise |
-| iterationNumber      |                                     number                                     |    1000     | number of iterations to do                                                                                                                         |
-| mutationFunction     |                           (Individual) => Individual                           |  undefined  | function used when mutation of an Individual occurs                                                                                                |
-| mutationProbability  |                                     number                                     |     0.8     | probability of mutation                                                                                                                            |
-| selectPairFunction   |    Array<{entity:Individual, fitness:number}\>, (number, number) => boolean    | tournament3 | function taking the population and a fitnessComparator as parameters, returning a pair of individual                                               |
-| selectSingleFunction |    Array<{entity:Individual, fitness:number}\>, (number, number) => boolean    |   fittest   | function taking the population and a fitnessComparator as parameters, returning a single individual                                                |
-| spareFittest         |                                    boolean                                     |    true     | spare the fittest indivual during each iteration or not                                                                                            |
-| seed                 |                               Array<Individual\>                               |  undefined  | first population of the algorithm                                                                                                                  |
+By not providing a crossover function, you are creating an evolutionary algorithm.
+
+Crossover function and pair selection function are linked must both be set in order to create a genetic algorithm.
+
+| Parameter            |                                      Type                                      |   Default   | Required | Description                                                                                                                                        |
+| -------------------- | :----------------------------------------------------------------------------: | :---------: | :------: | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| crossoverFunction    |              (Individual, Individual) => [Individual, Individual]              |  undefined  |          | function used when crossover of two Individuals occurs                                                                                             |
+| crossoverProbability |                                     number                                     |     0.8     |          | probability of crossover                                                                                                                           |
+| fitnessComparator    |                          (number, number) => boolean                           |   Greater   |          | function used to compare two fitness and return whether the first is better or not                                                                 |
+| fitnessEvaluator     |                             (Individual) => number                             |  undefined  |    X     | function used to evaluate fitness of an Individual                                                                                                 |
+| iterationCallback    | ({iterationNumber:number, elapsedTime:number, bestFitness: number}) => boolean |    null     |    X     | function called after each iteration giving some information to the main program. Should return false if the algorithm has to stop, true otherwise |
+| iterationNumber      |                                     number                                     |    1000     |          | number of iterations to do                                                                                                                         |
+| mutationFunction     |                           (Individual) => Individual                           |  undefined  |    X     | function used when mutation of an Individual occurs                                                                                                |
+| mutationProbability  |                                     number                                     |     0.8     |          | probability of mutation                                                                                                                            |
+| selectPairFunction   |    Array<{entity:Individual, fitness:number}\>, (number, number) => boolean    | tournament3 |          | function taking the population and a fitnessComparator as parameters, returning a pair of individual                                               |
+| selectSingleFunction |    Array<{entity:Individual, fitness:number}\>, (number, number) => boolean    |   fittest   |    X     | function taking the population and a fitnessComparator as parameters, returning a single individual                                                |
+| spareFittest         |                                    boolean                                     |    true     |          | spare the fittest indivual during each iteration or not                                                                                            |
+| seed                 |                               Array<Individual\>                               |  undefined  |    X     | first population of the algorithm                                                                                                                  |
 
 #### Selection Function
 
