@@ -2,7 +2,7 @@
 
 /**
  * Stub Math.random() in order to test selection
- * @param  {[type]} randomList list of the random number to return by Math.random()
+ * @param  randomList list of the random number to return by Math.random()
  */
 function stubRandom(randomList: number[]) {
   let index = 0;

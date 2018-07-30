@@ -22,11 +22,11 @@ class GenAlgo {
   mutationFunction: any => any;
   crossoverFunction: (any, any) => [any, any];
   selectSingleFunction: (
-    [{ entity: any, fitness: number }],
+    Array<{ entity: any, fitness: number }>,
     (number, number) => boolean
   ) => any;
   selectPairFunction: (
-    [{ entity: any, fitness: number }],
+    Array<{ entity: any, fitness: number }>,
     (number, number) => boolean
   ) => [any, any];
   iterationNumber: number;
@@ -50,7 +50,7 @@ class GenAlgo {
 
   /**
    * Set the list of individuals
-   * @param {[*]} seed list of individuals
+   * @param seed list of individuals
    */
   setSeed(seed: any[]) {
     this.seed = seed;
@@ -59,7 +59,7 @@ class GenAlgo {
 
   /**
    * Set the fitness evaluator used to compute the fitness of an individual
-   * @param {function} fitnessEvaluator the function used as a fitnessEvaluator, should take an individual and return a fitness
+   * @param fitnessEvaluator the function used as a fitnessEvaluator, should take an individual and return a fitness
    */
   setFitnessEvaluator(fitnessEvaluator: any => number) {
     this.fitnessEvaluator = fitnessEvaluator;
@@ -67,7 +67,7 @@ class GenAlgo {
 
   /**
    * Set the fitness comparator used to compare to fitness
-   * @param {function} fitnessComparator the function used as a fitnessComparator, should take two numbers and return a boolean
+   * @param  fitnessComparator the function used as a fitnessComparator, should take two numbers and return a boolean
    */
   setFitnessComparator(
     fitnessComparator: (number, number) => boolean = greater
@@ -77,7 +77,7 @@ class GenAlgo {
 
   /**
    * Set the function called at the end of an iteration
-   * @param {function} iterationCallback function that takes the best fitness and the time spended for the current iteration and return whether it should keep going or not
+   * @param iterationCallback function that takes the best fitness and the time spended for the current iteration and return whether it should keep going or not
    */
   setIterationCallback(iterationCallback: (number, number) => boolean) {
     this.iterationCallback = iterationCallback;
@@ -85,7 +85,7 @@ class GenAlgo {
 
   /**
    * Set the function called to mutate an individual
-   * @param {function} mutationFunction function that takes an individual as parameter and returned its mutated version.
+   * @param  mutationFunction function that takes an individual as parameter and returned its mutated version.
    */
   setMutationFunction(mutationFunction: any => any) {
     this.mutationFunction = mutationFunction;
@@ -93,7 +93,7 @@ class GenAlgo {
 
   /**
    * Set the function called when crossing two individual
-   * @param {function} crossoverFunction function that takes two individuals as parameters and return the two children of the crossover
+   * @param crossoverFunction function that takes two individuals as parameters and return the two children of the crossover
    */
 
   setCrossoverFunction(crossoverFunction: (any, any) => [any, any]) {
@@ -102,11 +102,11 @@ class GenAlgo {
 
   /**
    * Set the function called to select a single individual
-   * @param {function} selectSingleFunction function that takes a population and a fitness evaluator and return a single individual
+   * @param  selectSingleFunction function that takes a population and a fitness evaluator and return a single individual
    */
   setSelectSingleFunction(
     selectSingleFunction: (
-      [{ entity: any, fitness: number }],
+      Array<{ entity: any, fitness: number }>,
       (number, number) => boolean
     ) => any
   ) {
@@ -115,11 +115,11 @@ class GenAlgo {
 
   /**
    * Set the function called to select a pair of individuals
-   * @param {function} selectSingleFunction function that takes a population and a fitness evaluator and return a pair of individuals
+   * @param selectSingleFunction function that takes a population and a fitness evaluator and return a pair of individuals
    */
   setSelectPairFunction(
     selectPairFunction: (
-      [{ entity: any, fitness: number }],
+      Array<{ entity: any, fitness: number }>,
       (number, number) => boolean
     ) => [any, any]
   ) {
@@ -180,8 +180,8 @@ class GenAlgo {
 
   /**
    * Mutate individual depending on mutation probability
-   * @param  {*} individual the individual to mutate
-   * @return {*}            the mutated individual
+   * @param  individual the individual to mutate
+   * @return            the mutated individual
    */
   _mutateIndividual(individual: any) {
     return Math.random() <= this.mutationProbability &&

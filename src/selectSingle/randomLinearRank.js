@@ -1,7 +1,9 @@
 import map from "lodash/fp/map";
 import range from "lodash/fp/range";
 
-export function linearRank(population: [{ entity: any, fitness: number }]) {
+export function linearRank(
+  population: Array<{ entity: any, fitness: number }>
+) {
   let probabilitySum = 0;
   const probabilityArray = [1];
 
@@ -21,10 +23,10 @@ function randomLinearRank() {
 
   /**
    * Select individual according to a linear rank
-   * @param  {[{entity:*, fitness:number}]} population population of the iteration
-   * @return {*}            random individual
+   * @param   population population of the iteration
+   * @return             random individual
    */
-  return function(population: [{ entity: any, fitness: number }]) {
+  return function(population: Array<{ entity: any, fitness: number }>) {
     if (ranks.length === 0) {
       ranks = linearRank(population);
     }
