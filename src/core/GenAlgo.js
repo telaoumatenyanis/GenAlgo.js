@@ -222,6 +222,13 @@ class GenAlgo {
       throw new Error("Iteration callback can't be null");
     }
 
+    if (isNil(this.mutationFunction)) {
+      throw new Error("Mutation function can't be null");
+    }
+    if (isNil(this.selectSingleFunction)) {
+      throw new Error("Select single can't be null");
+    }
+
     if (!isNil(this.crossoverFunction) && isNil(this.selectPairFunction)) {
       throw new Error(
         "Select pair function can't be null when crossover function is set"
@@ -230,16 +237,6 @@ class GenAlgo {
     if (isNil(this.crossoverFunction) && !isNil(this.selectPairFunction)) {
       throw new Error(
         "Crossover function can't be null when select pair function is set"
-      );
-    }
-    if (!isNil(this.mutationFunction) && isNil(this.selectSingleFunction)) {
-      throw new Error(
-        "Select single function can't be null when mutation function is set"
-      );
-    }
-    if (isNil(this.mutationFunction) && !isNil(this.selectSingleFunction)) {
-      throw new Error(
-        "Mutation function can't be null when select single function is set"
       );
     }
   }
