@@ -89,6 +89,13 @@ GenAlgo allows you to maximize or minimize the fitness by setting the comparator
 ## Polynomial extremum example
 
 ```
+import GenAlgo from "../../src/core/GenAlgo.js";
+import lesser from "../../src/fitnessComparator/lesser.js";
+import tournament3 from "../../src/singleSelector/tournament3.js";
+import tournament3Pair from "../../src/pairSelector/tournament3.js";
+import rangeStep from "lodash/fp/rangeStep";
+
+
 function tryToFindPolynomialExtremum(func: number => number, min: boolean) {
 
   // Create a GenAlgo object with simple parameters
