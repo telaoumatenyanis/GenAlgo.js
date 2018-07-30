@@ -192,6 +192,12 @@ class GenAlgo {
       : individual;
   }
 
+  _getElapsedTime(startTime: [number, number]): number {
+    return parseFloat(
+      process.hrtime(startTime)[0] + "." + process.hrtime(startTime)[1]
+    );
+  }
+
   /**
    * Start the genetic algorithm if the required parameters has been set
    */
@@ -200,7 +206,19 @@ class GenAlgo {
 
     this.individuals = map(individual => cloneDeep(individual), this.seed);
 
-    while (this.iterationCallback()) {
+    let population = this._cloneAndSortIndividuals(this.individuals);
+
+    const startTime = process.hrtime();
+
+    let numberOfIteration = 0;
+
+    while (
+      this.iterationCallback(
+        population[0].fitness,
+        this._getElapsedTime(startTime)
+      ) &&
+      numberOfIteration < this.iterationNumber
+    ) {
       if (!isNil(this.selectSingleFunction.index)) {
         this.selectSingleFunction.index = 0;
       }
@@ -208,7 +226,7 @@ class GenAlgo {
         this.selectSingleFunction.ranks = [];
       }
 
-      const population = this._cloneAndSortIndividuals(this.individuals);
+      population = this._cloneAndSortIndividuals(this.individuals);
 
       const newPopulation = [];
 
@@ -243,6 +261,8 @@ class GenAlgo {
       }
 
       this.individuals = newPopulation;
+
+      numberOfIteration++;
     }
   }
 }
