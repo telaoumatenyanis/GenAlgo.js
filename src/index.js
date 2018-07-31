@@ -1,1 +1,1 @@
-export GenAlgo from "./core/GenAlgo.js";
+export { GenAlgo } from "./core/GenAlgo.js";
