@@ -1,11 +1,11 @@
 {
   "name": "genalgo",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Genetic algorithm in JS",
+  "main": "lib/index.js",
   "scripts": {
     "test": "jest",
-    "build:babel": "babel src -d dist --config-file .babelrc",
+    "build:babel": "babel src -d lib --config-file .babelrc",
     "flow": "flow"
   },
   "jest": {
