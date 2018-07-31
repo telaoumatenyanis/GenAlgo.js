@@ -280,7 +280,7 @@ class GenAlgo {
   /**
    * Start the genetic algorithm if the required parameters has been set
    */
-  startSync(callback): void {
+  startSync(callback: (any, any) => void): any {
     this._checkParameters();
 
     this.individuals = map(individual => cloneDeep(individual), this.seed);
