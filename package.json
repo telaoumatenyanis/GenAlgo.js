@@ -15,7 +15,12 @@
     "type": "git",
     "url": "git+https://github.com/telaoumatenyanis/GenAlgo.js.git"
   },
-  "keywords": ["Genetic", "Algorithm", "Javascript", "Heuristic"],
+  "keywords": [
+    "Genetic",
+    "Algorithm",
+    "Javascript",
+    "Heuristic"
+  ],
   "author": "Telaoumaten Yanis",
   "license": "MIT",
   "bugs": {
