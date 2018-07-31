@@ -6,21 +6,18 @@
   "scripts": {
     "test": "jest",
     "build:babel": "babel src -d lib --config-file .babelrc",
-    "flow": "flow"
+    "flow": "flow",
+    "prepublish": "npm run test && npm run flow && npm run build:babel"
   },
   "jest": {
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "testPathIgnorePatterns": ["/node_modules/", "/lib/"]
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/telaoumatenyanis/GenAlgo.js.git"
   },
-  "keywords": [
-    "Genetic",
-    "Algorithm",
-    "Javascript",
-    "Heuristic"
-  ],
+  "keywords": ["Genetic", "Algorithm", "Javascript", "Heuristic"],
   "author": "Telaoumaten Yanis",
   "license": "MIT",
   "bugs": {
