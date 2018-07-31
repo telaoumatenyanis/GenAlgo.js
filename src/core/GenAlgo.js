@@ -6,6 +6,7 @@ import map from "lodash/fp/map";
 import fittest from "../singleSelector/fittest.js";
 import tournament3 from "../pairSelector/tournament3.js";
 import greater from "../fitnessComparator/greater.js";
+import Promise from "bluebird";
 
 type Parameters = {
   seed: any[],
@@ -271,23 +272,22 @@ class GenAlgo {
       : individual;
   }
 
-  _getElapsedTime(startTime: [number, number]): number {
-    return parseFloat(
-      process.hrtime(startTime)[0] + "." + process.hrtime(startTime)[1]
-    );
+  _getElapsedTime(startTime: number): number {
+    const now = new Date();
+    return (now - startTime) / 1000;
   }
 
   /**
    * Start the genetic algorithm if the required parameters has been set
    */
-  start(): void {
+  startSync(callback): void {
     this._checkParameters();
 
     this.individuals = map(individual => cloneDeep(individual), this.seed);
 
     let population = this._cloneAndSortIndividuals(this.individuals);
 
-    const startTime = process.hrtime();
+    const startTime = new Date();
 
     let iterationNumber = 0;
 
@@ -339,7 +339,12 @@ class GenAlgo {
 
       iterationNumber++;
     }
+    return !isNil(callback)
+      ? callback(undefined, this.individuals[0])
+      : this.individuals[0];
   }
+
+  start = Promise.promisify(this.startSync);
 }
 
 export default GenAlgo;
