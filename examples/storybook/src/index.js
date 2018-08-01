@@ -16,6 +16,7 @@ import {
 } from "genalgo";
 import { Parser } from "expr-eval";
 import rangeStep from "lodash/fp/rangeStep";
+import map from "lodash/fp";
 
 class GenAlgoComponent extends Component {
   algo;
@@ -31,12 +32,17 @@ class GenAlgoComponent extends Component {
       comparator: "max",
       bestFitness: "",
       elapsedTime: "",
-      iterationNumber: ""
+      iterationNumber: "",
+      isRunning: false,
+      maxIterationNumber: 100
     };
     this.handleChangeFunction = this.handleChangeFunction.bind(this);
     this.handleSelectSingle = this.handleSelectSingle.bind(this);
     this.handleSelectPair = this.handleSelectPair.bind(this);
     this.handleSelectComparator = this.handleSelectComparator.bind(this);
+    this.handleChangeIterationNumber = this.handleChangeIterationNumber.bind(
+      this
+    );
   }
 
   handleChangeFunction(event) {
@@ -53,6 +59,19 @@ class GenAlgoComponent extends Component {
 
   handleSelectComparator(event) {
     this.setState({ comparator: event.target.value });
+  }
+
+  handleChangeIterationNumber(event) {
+    try {
+      if (event.target.value != "") {
+        const number = parseInt(event.target.value);
+        this.setState({ maxIterationNumber: number });
+      } else {
+        this.setState({ maxIterationNumber: 0 });
+      }
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   render() {
@@ -78,6 +97,7 @@ class GenAlgoComponent extends Component {
           <option value="tournament2">Tournament2</option>
           <option value="tournament3">Tournament3</option>
         </select>
+        <br />
         <span> Select pair : </span>
         <select
           value={this.state.selectPairFunction}
@@ -90,6 +110,7 @@ class GenAlgoComponent extends Component {
           <option value="tournament2">Tournament2</option>
           <option value="tournament3">Tournament3</option>
         </select>
+        <br />
         <span> min/max : </span>
         <select
           value={this.state.comparator}
@@ -99,15 +120,19 @@ class GenAlgoComponent extends Component {
           <option value="max">Max</option>
         </select>
         <br />
+        <span>
+          Number of iteration :
+          <input
+            style={{ marginLeft: 10, width: 50 }}
+            type="text"
+            value={this.state.maxIterationNumber}
+            onChange={this.handleChangeIterationNumber}
+          />
+        </span>
         <br />
-        <span>Iteration number : {this.state.iterationNumber}</span>
-        <br />
-        <span>Elapsed time : {this.state.elapsedTime}</span>
-        <br />
-        <span>Best fitness : {this.state.bestFitness}</span>
-        <br /> <br />
         <button
-          onClick={() => {
+          disabled={this.state.isRunning}
+          onClick={async () => {
             try {
               const func = this.parser
                 .parse(this.state.function)
@@ -117,7 +142,7 @@ class GenAlgoComponent extends Component {
               const algo = new GenAlgo({
                 mutationProbability: 0.2,
                 crossoverProbability: 0.8,
-                iterationNumber: 100
+                iterationNumber: this.state.maxIterationNumber
               });
 
               // Function used to mutate an individual
@@ -199,8 +224,9 @@ class GenAlgoComponent extends Component {
               }
 
               algo.setIterationCallback(iterationCallback);
-
-              algo.start();
+              this.setState({ isRunning: true });
+              await algo.start();
+              this.setState({ isRunning: false });
             } catch (e) {
               console.error(e);
               this.setState({ error: "Function is not valid" });
@@ -209,6 +235,8 @@ class GenAlgoComponent extends Component {
         >
           Start
         </button>
+        <br />
+        <span>Best Fitness : {this.state.bestFitness}</span>
       </div>
     );
   }

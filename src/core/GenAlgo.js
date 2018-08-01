@@ -280,7 +280,7 @@ class GenAlgo {
   /**
    * Start the genetic algorithm if the required parameters has been set
    */
-  startSync(callback: (any, any) => void): any {
+  async start(callback: (any, any) => void): any {
     this._checkParameters();
 
     this.individuals = map(individual => cloneDeep(individual), this.seed);
@@ -299,6 +299,7 @@ class GenAlgo {
       }) &&
       iterationNumber < this.iterationNumber
     ) {
+      await Promise.delay(0);
       this.selectSingleFunction.args = {};
 
       population = this._cloneAndSortIndividuals(this.individuals);
@@ -343,8 +344,6 @@ class GenAlgo {
       ? callback(undefined, this.individuals[0])
       : this.individuals[0];
   }
-
-  start = Promise.promisify(this.startSync);
 }
 
 export default GenAlgo;
