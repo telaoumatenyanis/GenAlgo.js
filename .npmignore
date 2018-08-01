@@ -1,3 +1,5 @@
 src/
 public/
 examples/
+.git/
+node_modules/
