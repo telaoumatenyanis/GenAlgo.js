@@ -15,7 +15,7 @@ type Parameters = {
   iterationCallback: ({
     iterationNumber: number,
     elapsedTime: number,
-    bestFitness: number
+    bestIndividual: { entity: any, fitness: number }
   }) => boolean,
   mutationFunction: any => any,
   crossoverFunction: (any, any) => [any, any],
@@ -41,7 +41,7 @@ class GenAlgo {
   iterationCallback: ({
     iterationNumber: number,
     elapsedTime: number,
-    bestFitness: number
+    bestIndividual: { entity: any, fitness: number }
   }) => boolean;
   mutationFunction: any => any;
   crossoverFunction: (any, any) => [any, any];
@@ -148,13 +148,13 @@ class GenAlgo {
 
   /**
    * Set the function called at the end of an iteration
-   * @param iterationCallback function that takes the best fitness and the time spended for the current iteration and return whether it should keep going or not
+   * @param iterationCallback function that takes the best individual, the time spent and the iteration number for the current iteration and return whether it should keep going or not
    */
   setIterationCallback(
     iterationCallback: ({
       iterationNumber: number,
       elapsedTime: number,
-      bestFitness: number
+      bestIndividual: { entity: any, fitness: number }
     }) => boolean
   ): void {
     this.iterationCallback = iterationCallback;
@@ -294,7 +294,7 @@ class GenAlgo {
     while (
       this.iterationCallback({
         iterationNumber,
-        bestFitness: population[0].fitness,
+        bestIndividual: population[0],
         elapsedTime: this._getElapsedTime(startTime)
       }) &&
       iterationNumber < this.iterationNumber

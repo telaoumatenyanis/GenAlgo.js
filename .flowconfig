@@ -1,5 +1,6 @@
 [ignore]
 .*/lib/.*
+.*/examples/.*
 [include]
 
 [libs]

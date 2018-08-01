@@ -12,11 +12,15 @@ import {
   randomLinearRankPair,
   sequentialPair,
   tournament2Pair,
-  tournament3Pair
+  tournament3Pair,
+  lesser
 } from "genalgo";
 import { Parser } from "expr-eval";
 import rangeStep from "lodash/fp/rangeStep";
-import map from "lodash/fp";
+import map from "lodash/fp/map";
+import Plot from "react-plotly.js";
+import isNil from "lodash/fp/isNil";
+import compact from "lodash/fp/compact";
 
 class GenAlgoComponent extends Component {
   algo;
@@ -26,7 +30,7 @@ class GenAlgoComponent extends Component {
     this.parser = new Parser();
     this.state = {
       error: "",
-      function: "-x^2-3*x",
+      function: "-x^2-30*x",
       selectSingleFunction: "fittest",
       selectPairFunction: "fittestRandom",
       comparator: "max",
@@ -34,7 +38,9 @@ class GenAlgoComponent extends Component {
       elapsedTime: "",
       iterationNumber: "",
       isRunning: false,
-      maxIterationNumber: 100
+      maxIterationNumber: 100,
+      plot: null,
+      visualize: false
     };
     this.handleChangeFunction = this.handleChangeFunction.bind(this);
     this.handleSelectSingle = this.handleSelectSingle.bind(this);
@@ -46,9 +52,48 @@ class GenAlgoComponent extends Component {
   }
 
   handleChangeFunction(event) {
-    this.setState({ function: event.target.value });
+    this.setState({ function: event.target.value }, () => {
+      try {
+        const func = this.parser.parse(this.state.function).toJSFunction("x");
+        this.setState({ error: "" });
+        const x = rangeStep(0.05, -100, 100);
+        this.setState({
+          plot: this.getPlotComponent(func, x)
+        });
+      } catch (e) {
+        this.setState({ error: "Function is not valid" });
+      }
+    });
   }
 
+  getPlotComponent(func, x, point) {
+    const y = map(value => func(value), x);
+
+    const pointGraph = !isNil(point)
+      ? {
+          x: [point],
+          y: [func(point)],
+          mode: "markers",
+          marker: { color: "red" }
+        }
+      : undefined;
+    const data = compact([
+      {
+        x,
+        y,
+        mode: "lines",
+        marker: { color: "blue" }
+      },
+      pointGraph
+    ]);
+    return <Plot data={data} />;
+  }
+
+  componentDidMount() {
+    const func = this.parser.parse(this.state.function).toJSFunction("x");
+    const x = rangeStep(1, -100, 100);
+    this.setState({ plot: this.getPlotComponent(func, x) });
+  }
   handleSelectSingle(event) {
     this.setState({ selectSingleFunction: event.target.value });
   }
@@ -78,8 +123,11 @@ class GenAlgoComponent extends Component {
     return (
       <div>
         {this.state.error}
+        <div style={{ float: "right" }}>{this.state.plot}</div>
+        <br />
         <span> Function : </span>
         <input
+          style={{ width: 400 }}
           type="text"
           value={this.state.function}
           onChange={this.handleChangeFunction}
@@ -130,6 +178,19 @@ class GenAlgoComponent extends Component {
           />
         </span>
         <br />
+        <span>
+          Visualize on graph (this will slow the iteration as graph is
+          rerendered each time) :
+          <input
+            name="Visualize"
+            type="checkbox"
+            checked={this.state.visualize}
+            onChange={event => {
+              this.setState({ visualize: event.target.checked });
+            }}
+          />
+        </span>
+        <br />
         <button
           disabled={this.state.isRunning}
           onClick={async () => {
@@ -155,19 +216,33 @@ class GenAlgoComponent extends Component {
                 return [(number1 + number2) / 2, number1 + number2];
               };
 
+              // Seed generation
+              const seed = rangeStep(10, -10000, 10000);
+
+              const plotSeed = rangeStep(0.05, -100, 100);
+
               // Will be called at each iteration
               const iterationCallback = ({
-                bestFitness,
+                bestIndividual,
                 elapsedTime,
                 iterationNumber
               }) => {
-                console.log(bestFitness);
-                this.setState({ bestFitness, elapsedTime, iterationNumber });
+                this.setState({
+                  bestFitness: bestIndividual.fitness,
+                  elapsedTime,
+                  iterationNumber
+                });
+                if (this.state.visualize) {
+                  this.setState({
+                    plot: this.getPlotComponent(
+                      func,
+                      plotSeed,
+                      bestIndividual.entity
+                    )
+                  });
+                }
                 return true;
               };
-
-              // Seed generation
-              const seed = rangeStep(10, -10000, 10000);
 
               algo.setSeed(seed);
 
@@ -225,8 +300,11 @@ class GenAlgoComponent extends Component {
 
               algo.setIterationCallback(iterationCallback);
               this.setState({ isRunning: true });
-              await algo.start();
-              this.setState({ isRunning: false });
+              const result = await algo.start();
+              this.setState({
+                isRunning: false,
+                plot: this.getPlotComponent(func, plotSeed, result)
+              });
             } catch (e) {
               console.error(e);
               this.setState({ error: "Function is not valid" });
@@ -235,6 +313,10 @@ class GenAlgoComponent extends Component {
         >
           Start
         </button>
+        <br />
+        <span>Iteration Number : {this.state.iterationNumber}</span>
+        <br />
+        <span>Elapsed Time : {this.state.elapsedTime}</span>
         <br />
         <span>Best Fitness : {this.state.bestFitness}</span>
       </div>
