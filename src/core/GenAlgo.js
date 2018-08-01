@@ -394,6 +394,9 @@ class GenAlgo {
       iterationNumber++;
     }
 
+    /**
+     * SLice the array in order to keep only the number of individuals required
+     */
     const populationToReturn = !isNil(this.resultSize)
       ? population.slice(0, this.resultSize)
       : population;
