@@ -16,11 +16,21 @@ This library is inspired by :
 
 ## Installation
 
-Coming soon
+```
+npm install genalgo
+```
 
 ## Examples
 
 Website with examples in progress (polynomial extrema, bin packing, maybe travelling salesman)
+
+Polynomial extrema is available in the storybook :
+
+```
+cd examples/storybook
+npm install
+npm run storybook
+```
 
 ## Usage
 
@@ -48,6 +58,7 @@ Crossover function and pair selection function are linked must both be set in or
 | iterationNumber      |                                                     number                                                     |    1000     |          | number of iterations to do                                                                                                                         |
 | mutationFunction     |                                           (Individual) => Individual                                           |  undefined  |    X     | function used when mutation of an Individual occurs                                                                                                |
 | mutationProbability  |                                                     number                                                     |     0.8     |          | probability of mutation                                                                                                                            |
+| resultSize           |                                                     number                                                     |  undefined  |          | the number of individuals that should be returned. If it not set, GenAlgo will return the entire population                                        |
 | selectPairFunction   |     (Array<{entity:Individual, fitness:number}\>, (number, number) => boolean) => [Individual, Individual]     | tournament3 |          | function taking the population and a fitnessComparator as parameters, returning a pair of individual                                               |
 | selectSingleFunction |           (Array<{entity:Individual, fitness:number}\>, (number, number) => boolean) => [Individual]           |   fittest   |    X     | function taking the population and a fitnessComparator as parameters, returning a single individual                                                |
 | spareFittest         |                                                    boolean                                                     |    true     |          | spare the fittest indivual during each iteration or not                                                                                            |
@@ -95,10 +106,7 @@ GenAlgo allows you to maximize or minimize the fitness by setting the comparator
 ## Polynomial extremum example
 
 ```
-import GenAlgo from "../../src/core/GenAlgo.js";
-import lesser from "../../src/fitnessComparator/lesser.js";
-import tournament3 from "../../src/singleSelector/tournament3.js";
-import tournament3Pair from "../../src/pairSelector/tournament3.js";
+import { GenAlgo, lesser, tournament3Single, tournament3Pair } from "genalgo";
 import rangeStep from "lodash/fp/rangeStep";
 
 
@@ -144,7 +152,7 @@ function tryToFindPolynomialExtremum(func: number => number, min: boolean) {
 
   algo.setCrossoverFunction(crossover);
 
-  algo.setSelectSingleFunction(tournament3);
+  algo.setSelectSingleFunction(tournament3Single);
 
   algo.setSelectPairFunction(tournament3Pair);
 

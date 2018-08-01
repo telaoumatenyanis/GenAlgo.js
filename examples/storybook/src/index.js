@@ -299,11 +299,16 @@ class GenAlgoComponent extends Component {
               }
 
               algo.setIterationCallback(iterationCallback);
+
+              algo.setResultSize(10);
+
               this.setState({ isRunning: true });
+
               const result = await algo.start();
+
               this.setState({
                 isRunning: false,
-                plot: this.getPlotComponent(func, plotSeed, result)
+                plot: this.getPlotComponent(func, plotSeed, result[0].entity)
               });
             } catch (e) {
               console.error(e);

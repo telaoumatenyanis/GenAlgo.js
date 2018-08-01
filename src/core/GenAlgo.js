@@ -30,7 +30,8 @@ type Parameters = {
   iterationNumber: number,
   mutationProbability: number,
   crossoverProbability: number,
-  spareFittest: boolean
+  spareFittest: boolean,
+  resultSize: number
 };
 
 class GenAlgo {
@@ -58,6 +59,7 @@ class GenAlgo {
   crossoverProbability: number;
   spareFittest: boolean;
   individuals: any[];
+  resultSize: number;
 
   constructor({
     iterationNumber = 1000,
@@ -71,7 +73,8 @@ class GenAlgo {
     mutationFunction,
     crossoverFunction,
     selectSingleFunction = fittest,
-    selectPairFunction = tournament3
+    selectPairFunction = tournament3,
+    resultSize
   }: Parameters) {
     this.iterationNumber = iterationNumber;
     this.mutationProbability = mutationProbability;
@@ -85,7 +88,7 @@ class GenAlgo {
     this.crossoverFunction = crossoverFunction;
     this.selectSingleFunction = selectSingleFunction;
     this.selectPairFunction = selectPairFunction;
-
+    this.resultSize = resultSize;
     this.individuals = [];
   }
 
@@ -203,8 +206,12 @@ class GenAlgo {
     this.selectPairFunction = selectPairFunction;
   }
 
-  getIndividuals(): Array<any> {
-    return this.individuals;
+  /**
+   * Set the number of individual to return at the end of the algorithm
+   * @param resultSize the number of individuals to return
+   */
+  setResultSize(resultSize: number) {
+    this.resultSize = resultSize;
   }
 
   /**
@@ -283,51 +290,88 @@ class GenAlgo {
   async start(callback: (any, any) => void): any {
     this._checkParameters();
 
+    /**
+     * Store the current individuals
+     */
     this.individuals = map(individual => cloneDeep(individual), this.seed);
 
+    /**
+     * Create the first population
+     */
     let population = this._cloneAndSortIndividuals(this.individuals);
 
+    /**
+     * Used to calculate elapsed time
+     */
     const startTime = new Date();
 
+    // Used to return iteration number
     let iterationNumber = 0;
 
     while (
+      // Call the iteration callback, stop if it returns false
       this.iterationCallback({
-        iterationNumber,
+        iterationNumber: iterationNumber,
         bestIndividual: population[0],
         elapsedTime: this._getElapsedTime(startTime)
       }) &&
+      // Stop when all the iterations are done
       iterationNumber < this.iterationNumber
     ) {
+      /**
+       * Very important !
+       * As GenAlgo is not using webworkers, this puts the next iteration
+       * at the end of the call stack, allowing a web page to render without being
+       * blocked by the running GenAlgo .
+       */
       await Promise.delay(0);
+
+      /**
+       * Reset the args of the selectSingleFunction, this allows creation of
+       * additional selector without having to add code in the core.
+       */
       this.selectSingleFunction.args = {};
 
-      population = this._cloneAndSortIndividuals(this.individuals);
-
+      /**
+       * New population will be generated using mutations and possibly crossovers
+       */
       const newPopulation = [];
 
+      // Spare the fittest individual if spareFittest is set to true
       if (this.spareFittest) {
         newPopulation.push(population[0].entity);
       }
 
+      // While the new population is not fully created, mutate and crossover
+
       while (newPopulation.length < this.populationSize) {
+        // Check if it is possible to crossover (the algorithm is genetic)
         if (
-          !isNil(this.crossoverFunction) && // if crossoverFunction exists
-          newPopulation.length + 1 < this.populationSize && // population can't exceed initial size
-          Math.random() <= this.crossoverProbability // crossover happens
+          !isNil(this.crossoverFunction) &&
+          newPopulation.length + 1 < this.populationSize &&
+          Math.random() <= this.crossoverProbability
         ) {
+          /**
+           * Select two parents using the select pair function
+           */
           const parents = this.selectPairFunction(
             population,
             this.fitnessComparator
           );
 
+          /**
+           * Children are generated using crossover and possibly mutated
+           */
           const children = map(
             child => this._mutateIndividual(child),
             this.crossoverFunction(cloneDeep(parents[0]), cloneDeep(parents[1]))
           );
 
+          // Add the children to the new population
           newPopulation.push(children[0], children[1]);
+          // Otherwise the algorithm is evolutionary
         } else {
+          // Select an individual using the select single function and possibly mutate it
           newPopulation.push(
             this._mutateIndividual(
               this.selectSingleFunction(population, this.fitnessComparator)
@@ -336,13 +380,27 @@ class GenAlgo {
         }
       }
 
+      /**
+       * New indivuals are stored
+       */
       this.individuals = newPopulation;
 
+      /**
+       * Population is cloned and sorted according to the new fitnesses
+       */
+      population = this._cloneAndSortIndividuals(this.individuals);
+
+      // Increment iteration number
       iterationNumber++;
     }
+
+    const populationToReturn = !isNil(this.resultSize)
+      ? population.slice(0, this.resultSize)
+      : population;
+
     return !isNil(callback)
-      ? callback(undefined, this.individuals[0])
-      : this.individuals[0];
+      ? callback(undefined, populationToReturn)
+      : populationToReturn;
   }
 }
 

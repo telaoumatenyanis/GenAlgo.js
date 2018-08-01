@@ -46,26 +46,32 @@ async function tryToFindPolynomialExtremum(
 
   algo.setIterationCallback(iterationCallback);
 
+  algo.setResultSize(10);
+
   return await algo.start();
 }
 
 it("Minimum of (x+50)^2-5000*e^(-50*(x-5)^2)-54*cos((x-5)*5)-100*cos((x-5)*0.5) : should be near 5 in perfect case, near -45 in good cases", async () => {
-  expect(
-    await tryToFindPolynomialExtremum(number => {
-      return (
-        (number + 50) ** 2 -
-        5000 * Math.exp(-50 * (number - 5) ** 2) -
-        54 * Math.cos((number - 5) * 5) -
-        100 * Math.cos((number - 5) * 0.5)
-      );
-    }, true)
-  ).toBeCloseTo(4.99, 1);
+  const result = await tryToFindPolynomialExtremum(number => {
+    return (
+      (number + 50) ** 2 -
+      5000 * Math.exp(-50 * (number - 5) ** 2) -
+      54 * Math.cos((number - 5) * 5) -
+      100 * Math.cos((number - 5) * 0.5)
+    );
+  }, true);
+
+  expect(result.length).toEqual(10);
+
+  expect(result[0].entity).toBeCloseTo(4.99, 1);
 });
 
 it("Maximum of -9x^4-3x^3 : should be near -0.25", async () => {
-  expect(
-    await tryToFindPolynomialExtremum(number => {
-      return -9 * number ** 4 - 3 * number ** 3;
-    })
-  ).toBeCloseTo(-0.25, 1);
+  const result = await tryToFindPolynomialExtremum(number => {
+    return -9 * number ** 4 - 3 * number ** 3;
+  });
+
+  expect(result.length).toEqual(10);
+
+  expect(result[0].entity).toBeCloseTo(-0.25, 1);
 });
