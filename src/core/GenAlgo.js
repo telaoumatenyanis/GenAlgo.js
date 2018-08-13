@@ -34,6 +34,9 @@ type Parameters = {
   resultSize: number
 };
 
+/**
+ * Gen algo main class, used to set parameters and start the genetic algorithm
+ */
 class GenAlgo {
   seed: any[];
   populationSize: number;
@@ -249,6 +252,11 @@ class GenAlgo {
     }
   }
 
+  /**
+   * Clone and sort individuals of a population
+   * @param  individuals a list of individual
+   * @return             a list of object having the entity and fitness attributes
+   */
   _cloneAndSortIndividuals(
     individuals: any[]
   ): Array<{ entity: any, fitness: number }> {
@@ -279,6 +287,9 @@ class GenAlgo {
       : individual;
   }
 
+  /**
+   * Get the elapsed time since the genetic algorithm has started
+   */
   _getElapsedTime(startTime: number): number {
     const now = new Date();
     return (now - startTime) / 1000;
@@ -395,7 +406,7 @@ class GenAlgo {
     }
 
     /**
-     * SLice the array in order to keep only the number of individuals required
+     * Slice the array in order to keep only the number of individuals required
      */
     const populationToReturn = !isNil(this.resultSize)
       ? population.slice(0, this.resultSize)
