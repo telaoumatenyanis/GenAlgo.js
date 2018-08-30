@@ -46,7 +46,7 @@ All of the following parameters can be set during the GenAlgo object creation, o
 
 By not providing a crossover function, you are creating an evolutionary algorithm.
 
-Crossover function and pair selection function are linked must both be set in order to create a genetic algorithm.
+Crossover function and pair selection function are linked and must both be set in order to create a genetic algorithm.
 
 | Parameter            |                                                      Type                                                      |   Default   | Required | Description                                                                                                                                        |
 | -------------------- | :------------------------------------------------------------------------------------------------------------: | :---------: | :------: | -------------------------------------------------------------------------------------------------------------------------------------------------- |
