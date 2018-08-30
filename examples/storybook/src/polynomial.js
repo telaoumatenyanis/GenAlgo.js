@@ -22,7 +22,7 @@ import Plot from "react-plotly.js";
 import isNil from "lodash/fp/isNil";
 import compact from "lodash/fp/compact";
 
-class GenAlgoComponent extends Component {
+class Polynomial extends Component {
   algo;
 
   constructor(props) {
@@ -329,4 +329,4 @@ class GenAlgoComponent extends Component {
   }
 }
 
-export default GenAlgoComponent;
+export default Polynomial;

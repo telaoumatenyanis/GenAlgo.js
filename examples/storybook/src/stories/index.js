@@ -3,6 +3,6 @@ import React from "react";
 import { storiesOf } from "@storybook/react";
 import { action } from "@storybook/addon-actions";
 import { linkTo } from "@storybook/addon-links";
-import GenAlgo from "../";
+import Polynomial from "../polynomial.js";
 
-storiesOf("Button", module).add("with text", () => <GenAlgo />);
+storiesOf("GenAlgo", module).add("Polynomial Extremum", () => <Polynomial />);
