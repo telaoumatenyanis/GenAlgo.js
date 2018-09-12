@@ -22,6 +22,8 @@ import Plot from "react-plotly.js";
 import isNil from "lodash/fp/isNil";
 import compact from "lodash/fp/compact";
 
+import Parameters from "./parameters";
+
 class Polynomial extends Component {
   algo;
 
@@ -122,9 +124,8 @@ class Polynomial extends Component {
   render() {
     return (
       <div>
-        {this.state.error}
+        <div style={{ color: "red" }}>{this.state.error}</div>
         <div style={{ float: "right" }}>{this.state.plot}</div>
-        <br />
         <span> Function : </span>
         <input
           style={{ width: 400 }}
@@ -132,51 +133,6 @@ class Polynomial extends Component {
           value={this.state.function}
           onChange={this.handleChangeFunction}
         />
-        <br />
-        <span> Select single : </span>
-        <select
-          value={this.state.selectSingleFunction}
-          onChange={this.handleSelectSingle}
-        >
-          <option value="fittest">Fittest</option>
-          <option value="random">Random</option>
-          <option value="randomLinearRank">RandomLinearRank</option>
-          <option value="sequential">Sequential</option>
-          <option value="tournament2">Tournament2</option>
-          <option value="tournament3">Tournament3</option>
-        </select>
-        <br />
-        <span> Select pair : </span>
-        <select
-          value={this.state.selectPairFunction}
-          onChange={this.handleSelectPair}
-        >
-          <option value="fittestRandom">FittestRandom</option>
-          <option value="random">Random</option>
-          <option value="randomLinearRank">RandomLinearRank</option>
-          <option value="sequential">Sequential</option>
-          <option value="tournament2">Tournament2</option>
-          <option value="tournament3">Tournament3</option>
-        </select>
-        <br />
-        <span> min/max : </span>
-        <select
-          value={this.state.comparator}
-          onChange={this.handleSelectComparator}
-        >
-          <option value="min">Min</option>
-          <option value="max">Max</option>
-        </select>
-        <br />
-        <span>
-          Number of iteration :
-          <input
-            style={{ marginLeft: 10, width: 50 }}
-            type="text"
-            value={this.state.maxIterationNumber}
-            onChange={this.handleChangeIterationNumber}
-          />
-        </span>
         <br />
         <span>
           Visualize on graph (this will slow the iteration as graph is
@@ -191,6 +147,18 @@ class Polynomial extends Component {
           />
         </span>
         <br />
+        <Parameters
+          error={this.state.error}
+          selectSingle={this.state.selectSingle}
+          selectPair={this.state.selectPair}
+          comparator={this.state.comparator}
+          maxIterationNumber={this.state.maxIterationNumber}
+          handleSelectSingle={this.handleSelectSingle}
+          handleSelectPair={this.handleSelectPair}
+          handleSelectComparator={this.handleSelectComparator}
+          handleChangeIterationNumber={this.handleChangeIterationNumber}
+        />
+
         <button
           disabled={this.state.isRunning}
           onClick={async () => {
