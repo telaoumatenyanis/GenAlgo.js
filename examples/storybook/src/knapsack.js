@@ -128,7 +128,7 @@ class Knapsack extends Component {
                     range(0, size)
                   );
                 };
-                const objects = generateObjects(10, 0, 15, 0, 15);
+                const objects = generateObjects(10, 1, 15, 1, 15);
 
                 this.setState({ objects });
 
