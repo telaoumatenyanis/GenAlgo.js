@@ -26,6 +26,8 @@ import concat from "lodash/fp/concat";
 
 import Parameters from "./parameters";
 
+const mapUncapped = map.convert({ cap: false });
+
 class Knapsack extends Component {
   algo;
 
@@ -43,7 +45,8 @@ class Knapsack extends Component {
       isRunning: false,
       maxIterationNumber: 100,
       visualize: false,
-      objects: []
+      objects: [],
+      result: null
     };
     this.handleSelectSingle = this.handleSelectSingle.bind(this);
     this.handleSelectPair = this.handleSelectPair.bind(this);
@@ -256,7 +259,7 @@ class Knapsack extends Component {
 
                 this.setState({
                   isRunning: false,
-                  result: result[1].entity
+                  result: result[0].entity
                 });
               } catch (e) {
                 console.error(e);
@@ -281,13 +284,17 @@ class Knapsack extends Component {
             border: "1px solid black"
           }}
         >
-          {map(
-            object => (
+          {mapUncapped(
+            (object, index) => (
               <div
+                key={index}
                 style={{
                   width: 40,
                   height: 40,
-                  border: "1px solid black",
+                  border:
+                    !isNil(this.state.result) && this.state.result[index]
+                      ? "2px solid lightgreen"
+                      : "1px solid red",
                   margin: 2,
                   display: "flex",
                   justifyContent: "center",
