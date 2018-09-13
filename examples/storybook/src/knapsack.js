@@ -130,7 +130,7 @@ class Knapsack extends Component {
                 };
                 const objects = generateObjects(10, 1, 15, 1, 15);
 
-                this.setState({ objects });
+                this.setState({ objects, result: null });
 
                 const weightLimit = 15;
 
