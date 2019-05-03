@@ -76,7 +76,7 @@ class GenAlgo {
     mutationFunction,
     crossoverFunction,
     selectSingleFunction = fittest,
-    selectPairFunction = tournament3,
+    selectPairFunction,
     resultSize
   }: Parameters) {
     this.iterationNumber = iterationNumber;
