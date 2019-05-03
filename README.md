@@ -105,7 +105,7 @@ GenAlgo allows you to maximize or minimize the fitness by setting the comparator
 
 ## Polynomial extremum example
 
-```
+```javascript
 import { GenAlgo, lesser, tournament3Single, tournament3Pair } from "genalgo";
 import rangeStep from "lodash/fp/rangeStep";
 
