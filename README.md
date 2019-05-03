@@ -130,9 +130,9 @@ function tryToFindPolynomialExtremum(func: number => number, min: boolean) {
   };
 
   // Will be called at each iteration
-  const iterationCallback = ({ bestFitness, elapsedTime, iterationNumber }) => {
+  const iterationCallback = ({ bestIndividual, elapsedTime, iterationNumber }) => {
     console.log("Iteration " + iterationNumber);
-    console.log("Best fitness : " + bestFitness);
+    console.log("Best fitness : " + bestIndividual.fitness);
     console.log("Elapsed time : " + elapsedTime);
     return true;
   };
