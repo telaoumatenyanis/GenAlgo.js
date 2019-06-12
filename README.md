@@ -29,6 +29,7 @@ Polynomial extrema is available in the storybook :
 ```
 cd examples/storybook
 npm install
+mkdir public
 npm run storybook
 ```
 
