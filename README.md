@@ -1,4 +1,6 @@
-# GenAlgo.js
+# GenAlgo.js 
+
+ ![npm version](https://img.shields.io/npm/v/genalgo.svg?style=for-the-badge) ![gzipped size](https://img.shields.io/bundlephobia/minzip/genalgo.svg?color=light-green&label=Gzipped%20Size&style=for-the-badge)
 
 ![logo](./public/templogo.png)
 
