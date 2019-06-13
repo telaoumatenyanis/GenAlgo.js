@@ -1,6 +1,6 @@
 {
   "name": "genalgo",
-  "version": "1.0.5",
+  "version": "1.0.7",
   "description": "Genetic algorithm in JS",
   "main": "lib/genalgo.js",
   "scripts": {

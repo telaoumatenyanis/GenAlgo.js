@@ -3,3 +3,8 @@ public/
 examples/
 .git/
 node_modules/
+.flowconfig
+jest.config.js
+jestPreprocess.js
+LICENSE
+webpack.config.js
