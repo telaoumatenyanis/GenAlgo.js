@@ -1,5 +1,4 @@
-import isNil from "lodash/fp/isNil";
-import get from "lodash/fp/get";
+import get from "../utils/get.js";
 
 /**
  * Select individual sequentially
@@ -7,7 +6,7 @@ import get from "lodash/fp/get";
  * @return             next individual of the sequence
  */
 function sequential(population: Array<{ entity: any, fitness: number }>): any {
-  if (isNil(get("args.index", sequential))) {
+  if (get(sequential, "args.index") == null) {
     sequential.args = { index: 0 };
   }
 

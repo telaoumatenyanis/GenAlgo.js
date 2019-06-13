@@ -1,12 +1,11 @@
 // @flow
-import isNil from "lodash/fp/isNil";
-import cloneDeep from "lodash/fp/cloneDeep";
-import orderBy from "lodash/fp/orderBy";
-import map from "lodash/fp/map";
+import rfdc from "rfdc";
 import fittest from "../singleSelector/fittest.js";
 import tournament3 from "../pairSelector/tournament3.js";
 import greater from "../fitnessComparator/greater.js";
 import delay from "../utils/delay.js";
+
+const cloneDeep = rfdc();
 
 type Parameters = {
   seed: any[],
@@ -221,31 +220,31 @@ class GenAlgo {
    * Check that required parameters are set.
    */
   _checkParameters(): void {
-    if (isNil(this.seed)) {
+    if (this.seed == null) {
       throw new Error("Seed can't be null");
     }
 
-    if (isNil(this.fitnessEvaluator)) {
+    if (this.fitnessEvaluator == null) {
       throw new Error("Fitness evaluator can't be null");
     }
 
-    if (isNil(this.iterationCallback)) {
+    if (this.iterationCallback == null) {
       throw new Error("Iteration callback can't be null");
     }
 
-    if (isNil(this.mutationFunction)) {
+    if (this.mutationFunction == null) {
       throw new Error("Mutation function can't be null");
     }
-    if (isNil(this.selectSingleFunction)) {
+    if (this.selectSingleFunction == null) {
       throw new Error("Select single can't be null");
     }
 
-    if (!isNil(this.crossoverFunction) && isNil(this.selectPairFunction)) {
+    if (this.crossoverFunction != null && this.selectPairFunction == null) {
       throw new Error(
         "Select pair function can't be null when crossover function is set"
       );
     }
-    if (isNil(this.crossoverFunction) && !isNil(this.selectPairFunction)) {
+    if (this.crossoverFunction == null && this.selectPairFunction != null) {
       throw new Error(
         "Crossover function can't be null when select pair function is set"
       );
@@ -260,19 +259,18 @@ class GenAlgo {
   _cloneAndSortIndividuals(
     individuals: any[]
   ): Array<{ entity: any, fitness: number }> {
-    return map(
-      individual => ({
+    return individuals
+      .map(individual => ({
         entity: cloneDeep(individual),
         fitness: this.fitnessEvaluator(individual)
-      }),
-      individuals
-    ).sort((individualA, individualB) => {
-      if (this.fitnessComparator(individualA.fitness, individualB.fitness)) {
-        return -1;
-      } else {
-        return 1;
-      }
-    });
+      }))
+      .sort((individualA, individualB) => {
+        if (this.fitnessComparator(individualA.fitness, individualB.fitness)) {
+          return -1;
+        } else {
+          return 1;
+        }
+      });
   }
 
   /**
@@ -282,7 +280,7 @@ class GenAlgo {
    */
   _mutateIndividual(individual: any): any {
     return Math.random() <= this.mutationProbability &&
-      !isNil(this.mutationFunction)
+      this.mutationFunction != null
       ? this.mutationFunction(cloneDeep(individual))
       : individual;
   }
@@ -304,7 +302,7 @@ class GenAlgo {
     /**
      * Store the current individuals
      */
-    this.individuals = map(individual => cloneDeep(individual), this.seed);
+    this.individuals = this.seed.map(individual => cloneDeep(individual));
 
     /**
      * Create the first population
@@ -358,7 +356,7 @@ class GenAlgo {
       while (newPopulation.length < this.populationSize) {
         // Check if it is possible to crossover (the algorithm is genetic)
         if (
-          !isNil(this.crossoverFunction) &&
+          this.crossoverFunction != null &&
           newPopulation.length + 1 < this.populationSize &&
           Math.random() <= this.crossoverProbability
         ) {
@@ -373,10 +371,10 @@ class GenAlgo {
           /**
            * Children are generated using crossover and possibly mutated
            */
-          const children = map(
-            child => this._mutateIndividual(child),
-            this.crossoverFunction(cloneDeep(parents[0]), cloneDeep(parents[1]))
-          );
+          const children = this.crossoverFunction(
+            cloneDeep(parents[0]),
+            cloneDeep(parents[1])
+          ).map(child => this._mutateIndividual(child));
 
           // Add the children to the new population
           newPopulation.push(children[0], children[1]);
@@ -408,11 +406,12 @@ class GenAlgo {
     /**
      * Slice the array in order to keep only the number of individuals required
      */
-    const populationToReturn = !isNil(this.resultSize)
-      ? population.slice(0, this.resultSize)
-      : population;
+    const populationToReturn =
+      this.resultSize != null
+        ? population.slice(0, this.resultSize)
+        : population;
 
-    return !isNil(callback)
+    return callback != null
       ? callback(undefined, populationToReturn)
       : populationToReturn;
   }

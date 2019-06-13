@@ -40,9 +40,10 @@
     "babel-preset-flow": "^6.23.0",
     "babel-preset-stage-2": "^6.24.1",
     "flow-bin": "^0.77.0",
-    "jest": "^23.4.2"
+    "jest": "^23.4.2",
+    "lodash": "4.17.11"
   },
   "dependencies": {
-    "lodash": "4.17.11"
+    "rfdc": "^1.1.4"
   }
 }

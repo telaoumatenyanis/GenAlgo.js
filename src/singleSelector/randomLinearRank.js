@@ -1,7 +1,6 @@
 import map from "lodash/fp/map";
 import range from "lodash/fp/range";
-import get from "lodash/fp/get";
-import isNil from "lodash/fp/isNil";
+import get from "../utils/get.js";
 
 export function linearRank(
   population: Array<{ entity: any, fitness: number }>
@@ -29,7 +28,7 @@ function randomLinearRank(
   population: Array<{ entity: any, fitness: number }>
 ): any {
   if (
-    isNil(get("args.ranks", randomLinearRank)) ||
+    get(randomLinearRank, "args.ranks") == null ||
     randomLinearRank.args.ranks === 0
   ) {
     randomLinearRank.args = {
