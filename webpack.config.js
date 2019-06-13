@@ -9,6 +9,7 @@ const config = {
     library: "genalgo",
     libraryTarget: "umd"
   },
+  target: "node",
   module: {
     rules: [
       {
