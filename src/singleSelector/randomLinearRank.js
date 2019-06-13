@@ -1,5 +1,4 @@
-import map from "lodash/fp/map";
-import range from "lodash/fp/range";
+import range from "../utils/range";
 import get from "../utils/get.js";
 
 export function linearRank(
@@ -8,13 +7,13 @@ export function linearRank(
   let probabilitySum = 0;
   const probabilityArray = [1];
 
-  map(index => {
+  range(0, population.length).map(index => {
     // The probability is calculated using the formula from https://www.tik.ee.ethz.ch/file/6c0e384dceb283cd4301339a895b72b8/TIK-Report11.pdf
     probabilitySum +=
       ((1 / population.length) * 2 * (population.length - 1 - index)) /
       (population.length - 1);
     probabilityArray.push(1 - probabilitySum);
-  }, range(0, population.length));
+  });
 
   return probabilityArray;
 }
