@@ -1,4 +1,6 @@
-export default function(object, path) {
+// @flow
+
+export default function(object: Object, path: string): ?Object {
   if (path == null) {
     return undefined;
   }

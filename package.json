@@ -4,7 +4,7 @@
   "description": "Genetic algorithm in JS",
   "main": "lib/index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --config jest.config.js --no-cache",
     "webpack": "rm -rf lib && webpack --mode production",
     "flow": "flow",
     "prepublish": "npm run test && npm run flow && npm run webpack"
@@ -39,7 +39,8 @@
     "@babel/preset-flow": "^7.0.0",
     "babel-loader": "^8.0.6",
     "flow-bin": "^0.77.0",
-    "jest": "^23.4.2",
+    "babel-jest": "^24.8.0",
+    "jest": "^24.8.0",
     "lodash": "4.17.11",
     "uglifyjs-webpack-plugin": "^2.1.3",
     "webpack": "^4.34.0",
