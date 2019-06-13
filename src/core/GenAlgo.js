@@ -6,7 +6,7 @@ import map from "lodash/fp/map";
 import fittest from "../singleSelector/fittest.js";
 import tournament3 from "../pairSelector/tournament3.js";
 import greater from "../fitnessComparator/greater.js";
-import Promise from "bluebird";
+import delay from "../utils/delay.js";
 
 type Parameters = {
   seed: any[],
@@ -335,7 +335,7 @@ class GenAlgo {
        * at the end of the call stack, allowing a web page to render without being
        * blocked by the running GenAlgo .
        */
-      await Promise.delay(0);
+      await delay(0);
 
       /**
        * Reset the args of the selectSingleFunction, this allows creation of
