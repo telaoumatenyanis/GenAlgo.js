@@ -5,9 +5,9 @@
   "main": "lib/index.js",
   "scripts": {
     "test": "jest",
-    "build:babel": "babel src -d lib --config-file .babelrc",
+    "webpack": "rm -rf lib && webpack --mode production",
     "flow": "flow",
-    "prepublish": "npm run test && npm run flow && npm run build:babel"
+    "prepublish": "npm run test && npm run flow && npm run webpack"
   },
   "jest": {
     "testEnvironment": "node",
@@ -33,17 +33,20 @@
   },
   "homepage": "https://github.com/telaoumatenyanis/GenAlgo.js#readme",
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.3",
-    "babel-plugin-transform-runtime": "^6.23.0",
-    "babel-preset-env": "^1.7.0",
-    "babel-preset-flow": "^6.23.0",
-    "babel-preset-stage-2": "^6.24.1",
+    "@babel/core": "^7.4.5",
+    "@babel/plugin-transform-runtime": "^7.4.4",
+    "@babel/preset-env": "^7.4.5",
+    "@babel/preset-flow": "^7.0.0",
+    "babel-loader": "^8.0.6",
     "flow-bin": "^0.77.0",
     "jest": "^23.4.2",
-    "lodash": "4.17.11"
+    "lodash": "4.17.11",
+    "uglifyjs-webpack-plugin": "^2.1.3",
+    "webpack": "^4.34.0",
+    "webpack-cli": "^3.3.4"
   },
   "dependencies": {
+    "@babel/runtime": "^7.4.5",
     "rfdc": "^1.1.4"
   }
 }
