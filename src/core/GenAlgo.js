@@ -378,7 +378,6 @@ class GenAlgo {
 
           // Add the children to the new population
           newPopulation.push(children[0], children[1]);
-          // Otherwise the algorithm is evolutionary
         } else {
           // Select an individual using the select single function and possibly mutate it
           newPopulation.push(

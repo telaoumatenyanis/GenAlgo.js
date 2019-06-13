@@ -44,9 +44,9 @@ const algo = new GenAlgo({})
 
 All of the following parameters can be set during the GenAlgo object creation, or using the corresponding setter.
 
-By not providing a crossover function, you are creating an evolutionary algorithm.
-
 Crossover function and pair selection function are linked and must both be set in order to create a genetic algorithm.
+
+Doing only crossovers or only mutation can result in slow convergence or being stuck in local extrema.
 
 | Parameter            |                                                      Type                                                      |   Default   | Required | Description                                                                                                                                        |
 | -------------------- | :------------------------------------------------------------------------------------------------------------: | :---------: | :------: | -------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -109,9 +109,7 @@ GenAlgo allows you to maximize or minimize the fitness by setting the comparator
 import { GenAlgo, lesser, tournament3Single, tournament3Pair } from "genalgo";
 import rangeStep from "lodash/fp/rangeStep";
 
-
 function tryToFindPolynomialExtremum(func: number => number, min: boolean) {
-
   // Create a GenAlgo object with simple parameters
   const algo = new GenAlgo({
     mutationProbability: 0.2,
@@ -130,7 +128,11 @@ function tryToFindPolynomialExtremum(func: number => number, min: boolean) {
   };
 
   // Will be called at each iteration
-  const iterationCallback = ({ bestIndividual, elapsedTime, iterationNumber }) => {
+  const iterationCallback = ({
+    bestIndividual,
+    elapsedTime,
+    iterationNumber
+  }) => {
     console.log("Iteration " + iterationNumber);
     console.log("Best fitness : " + bestIndividual.fitness);
     console.log("Elapsed time : " + elapsedTime);
