@@ -7,7 +7,7 @@ it("return the fittest of the population", () => {
     { entity: "bad", fitness: 1 }
   ];
 
-  const fittestIndivual = fittest(population);
+  const fittestIndividual = fittest(population);
 
-  expect(fittestIndivual).toEqual("best");
+  expect(fittestIndividual).toEqual("best");
 });

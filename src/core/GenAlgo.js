@@ -159,7 +159,8 @@ class GenAlgo {
     iterationCallback: ({
       iterationNumber: number,
       elapsedTime: number,
-      bestIndividual: { entity: any, fitness: number }
+      bestIndividual: { entity: any, fitness: number },
+      population: { entity: any, fitness: number }[]
     }) => boolean
   ): void {
     this.iterationCallback = iterationCallback;
@@ -322,7 +323,8 @@ class GenAlgo {
       this.iterationCallback({
         iterationNumber: iterationNumber,
         bestIndividual: population[0],
-        elapsedTime: this._getElapsedTime(startTime)
+        elapsedTime: this._getElapsedTime(startTime),
+        population: population
       }) &&
       // Stop when all the iterations are done
       iterationNumber < this.iterationNumber
@@ -389,7 +391,7 @@ class GenAlgo {
       }
 
       /**
-       * New indivuals are stored
+       * New individuals are stored
        */
       this.individuals = newPopulation;
 

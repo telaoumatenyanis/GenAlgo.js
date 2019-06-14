@@ -1,6 +1,6 @@
-# GenAlgo.js 
+# GenAlgo.js
 
- ![npm version](https://img.shields.io/npm/v/genalgo.svg?style=for-the-badge) ![gzipped size](https://img.shields.io/bundlephobia/minzip/genalgo.svg?color=light-green&label=Gzipped%20Size&style=for-the-badge)
+![npm version](https://img.shields.io/npm/v/genalgo.svg?style=for-the-badge) ![gzipped size](https://img.shields.io/bundlephobia/minzip/genalgo.svg?color=light-green&label=Gzipped%20Size&style=for-the-badge)
 
 ![logo](./public/templogo.png)
 
@@ -63,7 +63,7 @@ Doing only crossovers or mutations can result in slow convergence or being stuck
 | resultSize           |                                                     number                                                     |  undefined  |          | the number of individuals that should be returned. If it is not set, GenAlgo will return the entire population                                     |
 | selectPairFunction   |     (Array<{entity:Individual, fitness:number}\>, (number, number) => boolean) => [Individual, Individual]     | tournament3 |          | function taking the population and a fitnessComparator as parameters, returning a pair of individual                                               |
 | selectSingleFunction |           (Array<{entity:Individual, fitness:number}\>, (number, number) => boolean) => [Individual]           |   fittest   |    X     | function taking the population and a fitnessComparator as parameters, returning a single individual                                                |
-| spareFittest         |                                                    boolean                                                     |    true     |          | spare the fittest indivual during each iteration or not                                                                                            |
+| spareFittest         |                                                    boolean                                                     |    true     |          | spare the fittest individual during each iteration or not                                                                                          |
 | seed                 |                                               Array<Individual\>                                               |  undefined  |    X     | first population of the algorithm                                                                                                                  |
 
 #### Selection Function

@@ -23,13 +23,20 @@ import isNil from "lodash/fp/isNil";
 import compact from "lodash/fp/compact";
 import reduce from "lodash/fp/reduce";
 import concat from "lodash/fp/concat";
+import shuffle from "lodash/fp/shuffle";
+import contains from "lodash/fp/contains";
 
 import Parameters from "./parameters";
 
 const mapUncapped = map.convert({ cap: false });
 
-class Knapsack extends Component {
+class TSP extends Component {
   algo;
+  problemCanvas;
+  problemCtx;
+  solutionCanvas;
+  solutionCtx;
+  problem;
 
   constructor(props) {
     super(props);
@@ -43,7 +50,7 @@ class Knapsack extends Component {
       iterationNumber: "",
       isRunning: false,
       maxIterationNumber: 100,
-      objects: [],
+      visualize: false,
       result: null
     };
     this.handleSelectSingle = this.handleSelectSingle.bind(this);
@@ -52,6 +59,53 @@ class Knapsack extends Component {
     this.handleChangeIterationNumber = this.handleChangeIterationNumber.bind(
       this
     );
+  }
+
+  componentDidMount() {
+    this.problemCanvas = document.getElementById("problem");
+    this.problemCtx = this.problemCanvas.getContext("2d");
+    this.solutionCanvas = document.getElementById("solution");
+    this.solutionCtx = this.solutionCanvas.getContext("2d");
+    this.problem = this.generateProblem(50);
+    this.drawProblem();
+  }
+
+  drawProblem() {
+    this.problemCtx.fillStyle = "#000";
+
+    for (const city of this.problem) {
+      this.problemCtx.beginPath();
+      this.problemCtx.arc(city.x, city.y, 5, 0, 2 * Math.PI);
+      this.problemCtx.stroke();
+    }
+  }
+
+  clearCtx(canvas) {
+    canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+  }
+
+  drawIndividual(individual) {
+    this.solutionCtx.fillStyle = "#000";
+
+    this.solutionCtx.beginPath();
+    for (const cityNumber of individual) {
+      const city = this.problem[cityNumber];
+      this.solutionCtx.lineTo(city.x, city.y);
+    }
+    this.solutionCtx.stroke();
+  }
+
+  generateProblem(cityNumber) {
+    const problem = [];
+
+    for (let i = 0; i < cityNumber; i++) {
+      problem.push({
+        x: Math.floor(Math.random() * this.problemCanvas.offsetWidth),
+        y: Math.floor(Math.random() * this.problemCanvas.offsetHeight)
+      });
+    }
+
+    return problem;
   }
 
   handleSelectSingle(event) {
@@ -81,7 +135,7 @@ class Knapsack extends Component {
 
   render() {
     return (
-      <div style={{ display: "flex", flexDirection: "row" }}>
+      <div style={{ display: "flex", flexDirection: "column" }}>
         <div style={{ marginRight: 20 }}>
           <div style={{ color: "red" }}>{this.state.error}</div>
           <Parameters
@@ -106,73 +160,71 @@ class Knapsack extends Component {
                   iterationNumber: this.state.maxIterationNumber
                 });
 
-                const generateObjects = (
-                  size,
-                  minWeight,
-                  maxWeight,
-                  minValue,
-                  maxValue
-                ) => {
-                  return map(
-                    value => ({
-                      weight:
-                        Math.floor(
-                          Math.random() * (maxWeight - minWeight + 1)
-                        ) + minWeight,
-                      value:
-                        Math.floor(Math.random() * (maxValue - minValue + 1)) +
-                        minValue
-                    }),
-                    range(0, size)
-                  );
-                };
-                const objects = generateObjects(10, 1, 15, 1, 15);
-
-                this.setState({ objects, result: null });
-
-                const weightLimit = 15;
-
                 // Function used to mutate an individual
-                const mutation = array => {
-                  const changeIndex = Math.floor(Math.random() * array.length);
-                  array[changeIndex] = !array[changeIndex];
-                  return array;
+                const mutation = individual => {
+                  const rand = () =>
+                    Math.floor(Math.random() * individual.length);
+                  const rand1 = rand();
+                  let rand2 = rand();
+                  while (rand1 == rand2) {
+                    rand2 = rand();
+                  }
+
+                  const temp = individual[rand1];
+                  individual[rand1] = individual[rand2];
+                  individual[rand2] = temp;
+                  return individual;
+                };
+
+                const OX = (start, end, firstParent, secondParent) => {
+                  const child = Array(firstParent.length);
+                  const sample = firstParent.slice(start, end);
+                  for (let i = start; i < end; i++) {
+                    child[i] = firstParent[i];
+                  }
+
+                  for (const secondChild of secondParent) {
+                    if (!contains(secondChild, sample)) {
+                      child[end % firstParent.length] = secondChild;
+                      end++;
+                    }
+                  }
+                  return child;
                 };
 
                 // Function used to crossover two individuals
                 const crossover = (a, b) => {
-                  const cutIndex = Math.floor(a.length / 2);
-                  const newA = concat(a.slice(0, cutIndex), b.slice(cutIndex));
-                  const newB = concat(b.slice(0, cutIndex), a.slice(cutIndex));
-                  return [newA, newB];
+                  let start = Math.floor(Math.random() * a.length);
+                  let end = Math.floor(Math.random() * a.length);
+
+                  if (start > end) {
+                    start = start + end;
+                    end = start - end;
+                    start = start - end;
+                  }
+
+                  return [OX(start, end, a, b), OX(start, end, b, a)];
                 };
 
-                const fitnessEvaluator = array => {
-                  let valueSum = 0;
-                  let weightSum = 0;
-                  // Sum of the values
-                  for (let index = 0; index < array.length; index++) {
-                    if (array[index] === true) {
-                      valueSum += objects[index].value;
-                      weightSum += objects[index].weight;
-                    }
+                const fitnessEvaluator = individual => {
+                  let distance = 0;
+
+                  for (let i = 1; i < individual.length; i++) {
+                    const previousCity = this.problem[individual[i - 1]];
+                    const currentCity = this.problem[individual[i]];
+
+                    distance += Math.sqrt(
+                      (currentCity.x - previousCity.x) ** 2 +
+                        (currentCity.x - previousCity.y) ** 2
+                    );
                   }
 
-                  // Penalty depending on whether the weightLimit is exceeded or not
-                  if (weightSum > weightLimit) {
-                    return valueSum - 7 * (weightSum - weightLimit);
-                  }
-                  return valueSum;
+                  return distance;
                 };
 
                 const generateSeed = size => {
-                  return map(value => {
-                    const individual = [];
-                    for (let obj in objects) {
-                      individual.push(Math.random() > 0.5);
-                    }
-                    return individual;
-                  }, range(0, size));
+                  const inOrderPath = range(0, this.problem.length);
+                  return map(value => shuffle(inOrderPath), range(0, size));
                 };
 
                 // Seed generation
@@ -259,6 +311,8 @@ class Knapsack extends Component {
                   isRunning: false,
                   result: result[0].entity
                 });
+                this.clearCtx(this.solutionCanvas);
+                this.drawIndividual(result[0].entity);
               } catch (e) {
                 console.error(e);
               }
@@ -273,40 +327,14 @@ class Knapsack extends Component {
           <br />
           <span>Best Fitness : {this.state.bestFitness}</span>
         </div>
-        <div
-          style={{
-            flexGrow: 1,
-            padding: 5,
-            display: "flex",
-            border: "1px solid black"
-          }}
-        >
-          {mapUncapped(
-            (object, index) => (
-              <div
-                key={index}
-                style={{
-                  width: 40,
-                  height: 40,
-                  border:
-                    !isNil(this.state.result) && this.state.result[index]
-                      ? "2px solid lightgreen"
-                      : "1px solid red",
-                  margin: 2,
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center"
-                }}
-              >
-                {object.weight}-{object.value}
-              </div>
-            ),
-            this.state.objects
-          )}
+        <br />
+        <div style={{ width: "100%", position: "relative" }}>
+          <canvas style={{ position: "absolute" }} id="problem"></canvas>
+          <canvas style={{ position: "absolute" }} id="solution"></canvas>
         </div>
       </div>
     );
   }
 }
 
-export default Knapsack;
+export default TSP;
