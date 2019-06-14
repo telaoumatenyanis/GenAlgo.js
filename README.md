@@ -48,7 +48,7 @@ All of the following parameters can be set during the GenAlgo object creation, o
 
 Crossover function and pair selection function are linked and must both be set in order to create a genetic algorithm.
 
-Doing only crossovers or only mutation can result in slow convergence or being stuck in local extrema.
+Doing only crossovers or mutations can result in slow convergence or being stuck in local extrema.
 
 | Parameter            |                                                      Type                                                      |   Default   | Required | Description                                                                                                                                        |
 | -------------------- | :------------------------------------------------------------------------------------------------------------: | :---------: | :------: | -------------------------------------------------------------------------------------------------------------------------------------------------- |
