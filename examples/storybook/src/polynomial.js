@@ -23,6 +23,7 @@ import isNil from "lodash/fp/isNil";
 import compact from "lodash/fp/compact";
 
 import Parameters from "./parameters";
+import ParametersProvider from "./parametersProvider";
 
 class Polynomial extends Component {
   algo;
@@ -31,39 +32,28 @@ class Polynomial extends Component {
     super(props);
     this.parser = new Parser();
     this.state = {
-      error: "",
       function: "-x^2-30*x",
-      selectSingleFunction: "fittest",
-      selectPairFunction: "fittestRandom",
-      comparator: "max",
       bestFitness: "",
       elapsedTime: "",
       iterationNumber: "",
       isRunning: false,
-      maxIterationNumber: 100,
       plot: null,
       visualize: false
     };
     this.handleChangeFunction = this.handleChangeFunction.bind(this);
-    this.handleSelectSingle = this.handleSelectSingle.bind(this);
-    this.handleSelectPair = this.handleSelectPair.bind(this);
-    this.handleSelectComparator = this.handleSelectComparator.bind(this);
-    this.handleChangeIterationNumber = this.handleChangeIterationNumber.bind(
-      this
-    );
   }
 
-  handleChangeFunction(event) {
+  handleChangeFunction(event, handleError) {
     this.setState({ function: event.target.value }, () => {
       try {
         const func = this.parser.parse(this.state.function).toJSFunction("x");
-        this.setState({ error: "" });
+        handleError("");
         const x = rangeStep(0.05, -100, 100);
         this.setState({
           plot: this.getPlotComponent(func, x)
         });
       } catch (e) {
-        this.setState({ error: "Function is not valid" });
+        handleError("Function is not valid");
       }
     });
   }
@@ -96,196 +86,206 @@ class Polynomial extends Component {
     const x = rangeStep(1, -100, 100);
     this.setState({ plot: this.getPlotComponent(func, x) });
   }
-  handleSelectSingle(event) {
-    this.setState({ selectSingleFunction: event.target.value });
-  }
-
-  handleSelectPair(event) {
-    this.setState({ selectPairFunction: event.target.value });
-  }
-
-  handleSelectComparator(event) {
-    this.setState({ comparator: event.target.value });
-  }
-
-  handleChangeIterationNumber(event) {
-    try {
-      if (event.target.value != "") {
-        const number = parseInt(event.target.value);
-        this.setState({ maxIterationNumber: number });
-      } else {
-        this.setState({ maxIterationNumber: 0 });
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  }
 
   render() {
     return (
       <div>
-        <div style={{ color: "red" }}>{this.state.error}</div>
         <div style={{ float: "right" }}>{this.state.plot}</div>
-        <span> Function : </span>
-        <input
-          style={{ width: 400 }}
-          type="text"
-          value={this.state.function}
-          onChange={this.handleChangeFunction}
-        />
-        <br />
-        <span>
-          Visualize on graph (this will slow the iteration as graph is
-          rerendered each time) :
-          <input
-            name="Visualize"
-            type="checkbox"
-            checked={this.state.visualize}
-            onChange={event => {
-              this.setState({ visualize: event.target.checked });
-            }}
-          />
-        </span>
-        <br />
-        <Parameters
-          error={this.state.error}
-          selectSingle={this.state.selectSingle}
-          selectPair={this.state.selectPair}
-          comparator={this.state.comparator}
-          maxIterationNumber={this.state.maxIterationNumber}
-          handleSelectSingle={this.handleSelectSingle}
-          handleSelectPair={this.handleSelectPair}
-          handleSelectComparator={this.handleSelectComparator}
-          handleChangeIterationNumber={this.handleChangeIterationNumber}
-        />
-
-        <button
-          disabled={this.state.isRunning}
-          onClick={async () => {
-            try {
-              const func = this.parser
-                .parse(this.state.function)
-                .toJSFunction("x");
-              this.setState({ error: "" });
-
-              const algo = new GenAlgo({
-                mutationProbability: 0.2,
-                crossoverProbability: 0.8,
-                iterationNumber: this.state.maxIterationNumber
-              });
-
-              // Function used to mutate an individual
-              const mutation = number => {
-                return number + Math.random();
-              };
-
-              // Function used to crossover two individuals
-              const crossover = (number1, number2) => {
-                return [(number1 + number2) / 2, number1 + number2];
-              };
-
-              // Seed generation
-              const seed = rangeStep(10, -10000, 10000);
-
-              const plotSeed = rangeStep(0.05, -100, 100);
-
-              // Will be called at each iteration
-              const iterationCallback = ({
-                bestIndividual,
-                elapsedTime,
-                iterationNumber
-              }) => {
-                this.setState({
-                  bestFitness: bestIndividual.fitness,
-                  elapsedTime,
-                  iterationNumber
-                });
-                if (this.state.visualize) {
-                  this.setState({
-                    plot: this.getPlotComponent(
-                      func,
-                      plotSeed,
-                      bestIndividual.entity
-                    )
-                  });
+        <ParametersProvider>
+          {({
+            error,
+            selectSingle,
+            selectPair,
+            comparator,
+            maxIterationNumber,
+            crossoverProbability,
+            mutationProbability,
+            handleChangeCrossoverProbability,
+            handleChangeMutationProbability,
+            handleSelectSingle,
+            handleSelectPair,
+            handleSelectComparator,
+            handleChangeIterationNumber,
+            handleError
+          }) => (
+            <React.Fragment>
+              <div style={{ color: "red" }}>{error}</div>
+              <span> Function : </span>
+              <input
+                style={{ width: 400 }}
+                type="text"
+                value={this.state.function}
+                onChange={event =>
+                  this.handleChangeFunction(event, handleError)
                 }
-                return true;
-              };
+              />
+              <br />
+              <span>
+                Visualize on graph (this will slow the iteration as graph is
+                rerendered each time) :
+                <input
+                  name="Visualize"
+                  type="checkbox"
+                  checked={this.state.visualize}
+                  onChange={event => {
+                    this.setState({ visualize: event.target.checked });
+                  }}
+                />
+              </span>
+              <br />
+              <Parameters
+                selectSingle={selectSingle}
+                selectPair={selectPair}
+                comparator={comparator}
+                maxIterationNumber={maxIterationNumber}
+                crossoverProbability={crossoverProbability}
+                mutationProbability={mutationProbability}
+                handleChangeCrossoverProbability={
+                  handleChangeCrossoverProbability
+                }
+                handleChangeMutationProbability={
+                  handleChangeMutationProbability
+                }
+                handleSelectSingle={handleSelectSingle}
+                handleSelectPair={handleSelectPair}
+                handleSelectComparator={handleSelectComparator}
+                handleChangeIterationNumber={handleChangeIterationNumber}
+              />
 
-              algo.setSeed(seed);
+              <button
+                disabled={this.state.isRunning}
+                onClick={async () => {
+                  try {
+                    const func = this.parser
+                      .parse(this.state.function)
+                      .toJSFunction("x");
+                    handleError("");
 
-              algo.setFitnessEvaluator(func);
+                    const algo = new GenAlgo({
+                      mutationProbability: mutationProbability,
+                      crossoverProbability: crossoverProbability,
+                      iterationNumber: maxIterationNumber
+                    });
 
-              if (this.state.comparator === "min") {
-                algo.setFitnessComparator(lesser);
-              }
+                    // Function used to mutate an individual
+                    const mutation = number => {
+                      return number + Math.random();
+                    };
 
-              algo.setMutationFunction(mutation);
+                    // Function used to crossover two individuals
+                    const crossover = (number1, number2) => {
+                      return [(number1 + number2) / 2, number1 + number2];
+                    };
 
-              algo.setCrossoverFunction(crossover);
+                    // Seed generation
+                    const seed = rangeStep(10, -10000, 10000);
 
-              switch (this.state.selectSingleFunction) {
-                case "fittest":
-                  algo.setSelectSingleFunction(fittestSingle);
-                  break;
-                case "random":
-                  algo.setSelectSingleFunction(randomSingle);
-                  break;
-                case "randomLinearRank":
-                  algo.setSelectSingleFunction(randomLinearRankSingle);
-                  break;
-                case "sequential":
-                  algo.setSelectSingleFunction(sequentialSingle);
-                  break;
-                case "tournament2":
-                  algo.setSelectSingleFunction(tournament2Single);
-                  break;
-                case "tournament3":
-                  algo.setSelectSingleFunction(tournament3Single);
-                  break;
-              }
+                    const plotSeed = rangeStep(0.05, -100, 100);
 
-              switch (this.state.selectPairFunction) {
-                case "fittestRandom":
-                  algo.setSelectPairFunction(fittestRandomPair);
-                  break;
-                case "random":
-                  algo.setSelectPairFunction(randomPair);
-                  break;
-                case "randomLinearRank":
-                  algo.setSelectPairFunction(randomLinearRankPair);
-                  break;
-                case "sequential":
-                  algo.setSelectPairFunction(sequentialPair);
-                  break;
-                case "tournament2":
-                  algo.setSelectPairFunction(tournament2Pair);
-                  break;
-                case "tournament3":
-                  algo.setSelectPairFunction(tournament3Pair);
-                  break;
-              }
+                    // Will be called at each iteration
+                    const iterationCallback = ({
+                      bestIndividual,
+                      elapsedTime,
+                      iterationNumber
+                    }) => {
+                      this.setState({
+                        bestFitness: bestIndividual.fitness,
+                        elapsedTime,
+                        iterationNumber
+                      });
+                      if (this.state.visualize) {
+                        this.setState({
+                          plot: this.getPlotComponent(
+                            func,
+                            plotSeed,
+                            bestIndividual.entity
+                          )
+                        });
+                      }
+                      return true;
+                    };
 
-              algo.setIterationCallback(iterationCallback);
+                    algo.setSeed(seed);
 
-              algo.setResultSize(10);
+                    algo.setFitnessEvaluator(func);
 
-              this.setState({ isRunning: true });
+                    if (comparator === "min") {
+                      algo.setFitnessComparator(lesser);
+                    }
 
-              const result = await algo.start();
+                    algo.setMutationFunction(mutation);
 
-              this.setState({
-                isRunning: false,
-                plot: this.getPlotComponent(func, plotSeed, result[0].entity)
-              });
-            } catch (e) {
-              console.error(e);
-              this.setState({ error: "Function is not valid" });
-            }
-          }}
-        >
-          Start
-        </button>
+                    algo.setCrossoverFunction(crossover);
+
+                    switch (selectSingle) {
+                      case "fittest":
+                        algo.setSelectSingleFunction(fittestSingle);
+                        break;
+                      case "random":
+                        algo.setSelectSingleFunction(randomSingle);
+                        break;
+                      case "randomLinearRank":
+                        algo.setSelectSingleFunction(randomLinearRankSingle);
+                        break;
+                      case "sequential":
+                        algo.setSelectSingleFunction(sequentialSingle);
+                        break;
+                      case "tournament2":
+                        algo.setSelectSingleFunction(tournament2Single);
+                        break;
+                      case "tournament3":
+                        algo.setSelectSingleFunction(tournament3Single);
+                        break;
+                    }
+
+                    switch (selectPair) {
+                      case "fittestRandom":
+                        algo.setSelectPairFunction(fittestRandomPair);
+                        break;
+                      case "random":
+                        algo.setSelectPairFunction(randomPair);
+                        break;
+                      case "randomLinearRank":
+                        algo.setSelectPairFunction(randomLinearRankPair);
+                        break;
+                      case "sequential":
+                        algo.setSelectPairFunction(sequentialPair);
+                        break;
+                      case "tournament2":
+                        algo.setSelectPairFunction(tournament2Pair);
+                        break;
+                      case "tournament3":
+                        algo.setSelectPairFunction(tournament3Pair);
+                        break;
+                    }
+
+                    algo.setIterationCallback(iterationCallback);
+
+                    algo.setResultSize(10);
+
+                    this.setState({ isRunning: true });
+
+                    const result = await algo.start();
+
+                    this.setState({
+                      isRunning: false,
+                      plot: this.getPlotComponent(
+                        func,
+                        plotSeed,
+                        result[0].entity
+                      )
+                    });
+                  } catch (e) {
+                    console.error(e);
+                    handleError("Function is not valid");
+                  }
+                }}
+              >
+                Start
+              </button>
+            </React.Fragment>
+          )}
+        </ParametersProvider>
         <br />
         <span>Iteration Number : {this.state.iterationNumber}</span>
         <br />

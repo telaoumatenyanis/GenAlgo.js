@@ -1,4 +1,8 @@
 import React, { Component } from "react";
+import Slider, { createSliderWithTooltip } from "rc-slider";
+import "rc-slider/assets/index.css";
+
+const SliderWithTooltip = createSliderWithTooltip(Slider);
 
 class Parameters extends Component {
   render() {
@@ -7,6 +11,10 @@ class Parameters extends Component {
       selectPairFunction,
       comparator,
       maxIterationNumber,
+      crossoverProbability,
+      mutationProbability,
+      handleChangeCrossoverProbability,
+      handleChangeMutationProbability,
       handleSelectSingle,
       handleSelectPair,
       handleSelectComparator,
@@ -43,7 +51,7 @@ class Parameters extends Component {
           <option value="max">Max</option>
         </select>
         <br />
-        <span>
+        <span style={{ marginBottom: 20 }}>
           Number of iteration :
           <input
             style={{ marginLeft: 10, width: 50 }}
@@ -52,6 +60,27 @@ class Parameters extends Component {
             onChange={handleChangeIterationNumber}
           />
         </span>
+        <div style={{ display: "flex" }}>
+          <span style={{ width: 100 }}> Crossover:</span>
+          <SliderWithTooltip
+            min={0}
+            max={1}
+            step={0.01}
+            onChange={handleChangeCrossoverProbability}
+            value={crossoverProbability}
+          />
+        </div>
+        <div style={{ display: "flex" }}>
+          <span style={{ width: 100 }}> Mutation:</span>
+          <SliderWithTooltip
+            min={0}
+            max={1}
+            step={0.01}
+            onChange={handleChangeMutationProbability}
+            value={mutationProbability}
+          />
+        </div>
+        <br />
         {children}
       </div>
     );
