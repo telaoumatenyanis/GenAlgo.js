@@ -359,8 +359,7 @@ class GenAlgo {
         // Check if it is possible to crossover (the algorithm is genetic)
         if (
           this.crossoverFunction != null &&
-          newPopulation.length + 1 < this.populationSize &&
-          Math.random() <= this.crossoverProbability
+          newPopulation.length + 1 < this.populationSize
         ) {
           /**
            * Select two parents using the select pair function
@@ -373,13 +372,18 @@ class GenAlgo {
           /**
            * Children are generated using crossover and possibly mutated
            */
-          const children = this.crossoverFunction(
-            cloneDeep(parents[0]),
-            cloneDeep(parents[1])
-          ).map(child => this._mutateIndividual(child));
+          const children =
+            Math.random() <= this.crossoverProbability
+              ? this.crossoverFunction(
+                  cloneDeep(parents[0]),
+                  cloneDeep(parents[1])
+                )
+              : [cloneDeep(parents[0]), cloneDeep(parents[1])];
 
           // Add the children to the new population
-          newPopulation.push(children[0], children[1]);
+          children.map(child =>
+            newPopulation.push(this._mutateIndividual(child))
+          );
         } else {
           // Select an individual using the select single function and possibly mutate it
           newPopulation.push(

@@ -7,14 +7,16 @@ import {
   sequentialSingle,
   tournament2Single,
   tournament3Single,
+  roulette,
   fittestRandomPair,
   randomPair,
   randomLinearRankPair,
   sequentialPair,
   tournament2Pair,
   tournament3Pair,
+  roulettePair,
   lesser
-} from "genalgo";
+} from "../../../lib/genalgo.js";
 import { Parser } from "expr-eval";
 import range from "lodash/fp/range";
 import map from "lodash/fp/map";
@@ -220,33 +222,42 @@ class TSP extends Component {
                       const mutation = individual => {
                         const rand = () =>
                           Math.floor(Math.random() * individual.length);
-                        const rand1 = rand();
-                        let rand2 = rand();
-                        while (rand1 == rand2) {
-                          rand2 = rand();
-                        }
 
-                        const temp = individual[rand1];
-                        individual[rand1] = individual[rand2];
-                        individual[rand2] = temp;
+                        for (const city of individual) {
+                          if (Math.random() > 0.5) {
+                            const rand = Math.floor(
+                              Math.random() * individual.length
+                            );
+                            const temp = individual[city];
+                            individual[city] = individual[rand];
+                            individual[rand] = temp;
+                          }
+                        }
                         return individual;
                       };
 
                       const OX = (start, end, firstParent, secondParent) => {
-                        const child = Array(firstParent.length);
-                        const sample = firstParent.slice(start, end);
-                        for (let i = start; i < end; i++) {
-                          child[i] = firstParent[i];
-                        }
+                        const child = firstParent.slice(start, end);
+                        const length = firstParent.length;
 
-                        for (const secondChild of secondParent) {
-                          if (!contains(secondChild, sample)) {
-                            child[end % firstParent.length] = secondChild;
-                            end++;
+                        for (let i = 0; i < length; i++) {
+                          const index = (end + i) % length;
+                          const parentCity = secondParent[index];
+
+                          if (!child.some(city => city == parentCity)) {
+                            child.push(parentCity);
                           }
                         }
-                        return child;
+                        return rotate(child, start);
                       };
+
+                      function rotate(array, index) {
+                        const offset = array.length - index;
+                        return [
+                          ...array.slice(offset),
+                          ...array.slice(0, offset)
+                        ];
+                      }
 
                       // Function used to crossover two individuals
                       const crossover = (a, b) => {
@@ -263,23 +274,37 @@ class TSP extends Component {
                       };
 
                       const fitnessEvaluator = individual => {
-                        let distance = 0;
+                        let prev = this.problem[individual[0]];
 
-                        for (let i = 1; i < individual.length; i++) {
-                          const previousCity = this.problem[individual[i - 1]];
-                          const currentCity = this.problem[individual[i]];
+                        let distance = individual.reduce(
+                          (totalDist, location) => {
+                            const city = this.problem[location];
+                            const distToAdd = Math.hypot(
+                              city.x - prev.x,
+                              city.y - prev.y
+                            );
+                            prev = city;
+                            return totalDist + distToAdd;
+                          },
+                          0
+                        );
 
-                          distance += Math.sqrt(
-                            (currentCity.x - previousCity.x) ** 2 +
-                              (currentCity.x - previousCity.y) ** 2
-                          );
-                        }
+                        const first = this.problem[individual[0]];
+                        const last = this.problem[
+                          individual[individual.length - 1]
+                        ];
 
-                        return distance;
+                        distance += Math.hypot(
+                          first.x - last.x,
+                          first.y - last.y
+                        );
+
+                        return 1 / distance;
                       };
 
                       const generateSeed = size => {
                         const inOrderPath = range(0, this.problem.length);
+
                         return map(
                           value => shuffle(inOrderPath),
                           range(0, size)
@@ -293,24 +318,34 @@ class TSP extends Component {
                       const iterationCallback = ({
                         bestIndividual,
                         elapsedTime,
-                        iterationNumber
+                        iterationNumber,
+                        population
                       }) => {
-                        this.values.push(bestIndividual.fitness);
+                        this.values.push(1 / bestIndividual.fitness);
+                        const shouldChangeValue = algo.fitnessComparator(
+                          bestIndividual.fitness,
+                          this.state.bestFitness
+                        );
 
                         this.setState({
                           bestFitness:
                             this.state.bestFitness == ""
                               ? bestIndividual.fitness
-                              : algo.fitnessComparator(
-                                  bestIndividual.fitness,
-                                  this.state.bestFitness
-                                )
+                              : shouldChangeValue
                               ? bestIndividual.fitness
                               : this.state.bestFitness,
                           fitness: bestIndividual.fitness,
                           elapsedTime,
                           iterationNumber
                         });
+                        if (shouldChangeValue) {
+                          this.clearCtx(this.solutionBestCanvas);
+                          this.drawIndividual(
+                            this.solutionBestCtx,
+                            bestIndividual.entity
+                          );
+                        }
+
                         this.clearCtx(this.solutionCanvas);
                         this.drawIndividual(
                           this.solutionCtx,
@@ -342,6 +377,9 @@ class TSP extends Component {
                         case "randomLinearRank":
                           algo.setSelectSingleFunction(randomLinearRankSingle);
                           break;
+                        case "roulette":
+                          algo.setSelectPairFunction(roulette);
+                          break;
                         case "sequential":
                           algo.setSelectSingleFunction(sequentialSingle);
                           break;
@@ -362,6 +400,9 @@ class TSP extends Component {
                           break;
                         case "randomLinearRank":
                           algo.setSelectPairFunction(randomLinearRankPair);
+                          break;
+                        case "roulette":
+                          algo.setSelectPairFunction(roulettePair);
                           break;
                         case "sequential":
                           algo.setSelectPairFunction(sequentialPair);

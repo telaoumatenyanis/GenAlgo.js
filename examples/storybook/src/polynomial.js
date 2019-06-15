@@ -7,12 +7,14 @@ import {
   sequentialSingle,
   tournament2Single,
   tournament3Single,
+  roulette,
   fittestRandomPair,
   randomPair,
   randomLinearRankPair,
   sequentialPair,
   tournament2Pair,
   tournament3Pair,
+  roulettePair,
   lesser
 } from "genalgo";
 import { Parser } from "expr-eval";
@@ -240,6 +242,9 @@ class Polynomial extends Component {
                       case "randomLinearRank":
                         algo.setSelectSingleFunction(randomLinearRankSingle);
                         break;
+                      case "roulette":
+                        algo.setSelectPairFunction(roulette);
+                        break;
                       case "sequential":
                         algo.setSelectSingleFunction(sequentialSingle);
                         break;
@@ -260,6 +265,9 @@ class Polynomial extends Component {
                         break;
                       case "randomLinearRank":
                         algo.setSelectPairFunction(randomLinearRankPair);
+                        break;
+                      case "roulette":
+                        algo.setSelectPairFunction(roulettePair);
                         break;
                       case "sequential":
                         algo.setSelectPairFunction(sequentialPair);

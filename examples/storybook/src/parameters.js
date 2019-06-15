@@ -34,6 +34,7 @@ class Parameters extends Component {
           <option value="fittest">Fittest</option>
           <option value="random">Random</option>
           <option value="randomLinearRank">RandomLinearRank</option>
+          <option value="roulette">Roulette</option>
           <option value="sequential">Sequential</option>
           <option value="tournament2">Tournament2</option>
           <option value="tournament3">Tournament3</option>
@@ -44,6 +45,7 @@ class Parameters extends Component {
           <option value="fittestRandom">FittestRandom</option>
           <option value="random">Random</option>
           <option value="randomLinearRank">RandomLinearRank</option>
+          <option value="roulette">Roulette</option>
           <option value="sequential">Sequential</option>
           <option value="tournament2">Tournament2</option>
           <option value="tournament3">Tournament3</option>

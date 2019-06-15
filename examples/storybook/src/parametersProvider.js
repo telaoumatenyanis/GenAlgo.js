@@ -14,11 +14,11 @@ class ParametersProvider extends Component {
   };
 
   handleSelectSingle = event => {
-    this.setState({ selectSingleFunction: event.target.value });
+    this.setState({ selectSingle: event.target.value });
   };
 
   handleSelectPair = event => {
-    this.setState({ selectPairFunction: event.target.value });
+    this.setState({ selectPair: event.target.value });
   };
 
   handleSelectComparator = event => {
