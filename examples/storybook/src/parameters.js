@@ -13,12 +13,16 @@ class Parameters extends Component {
       maxIterationNumber,
       crossoverProbability,
       mutationProbability,
+      spareFittest,
+      populationSize,
       handleChangeCrossoverProbability,
       handleChangeMutationProbability,
       handleSelectSingle,
       handleSelectPair,
       handleSelectComparator,
       handleChangeIterationNumber,
+      handleChangeSpareFittest,
+      handleChangePopulationSize,
       children
     } = this.props;
 
@@ -60,6 +64,16 @@ class Parameters extends Component {
             onChange={handleChangeIterationNumber}
           />
         </span>
+        <br />
+        <span style={{ marginBottom: 20 }}>
+          Population size :
+          <input
+            style={{ marginLeft: 10, width: 50 }}
+            type="text"
+            value={populationSize}
+            onChange={handleChangePopulationSize}
+          />
+        </span>
         <div style={{ display: "flex" }}>
           <span style={{ width: 100 }}> Crossover:</span>
           <SliderWithTooltip
@@ -81,6 +95,12 @@ class Parameters extends Component {
           />
         </div>
         <br />
+        <input
+          type="checkbox"
+          checked={spareFittest}
+          onChange={handleChangeSpareFittest}
+        />
+        Spare fittest <br />
         {children}
       </div>
     );

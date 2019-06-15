@@ -56,12 +56,16 @@ class Knapsack extends Component {
               maxIterationNumber,
               crossoverProbability,
               mutationProbability,
+              spareFittest,
+              populationSize,
+              handleChangeSpareFittest,
               handleChangeCrossoverProbability,
               handleChangeMutationProbability,
               handleSelectSingle,
               handleSelectPair,
               handleSelectComparator,
               handleChangeIterationNumber,
+              handleChangePopulationSize,
               handleError
             }) => (
               <React.Fragment>
@@ -74,6 +78,9 @@ class Knapsack extends Component {
                   maxIterationNumber={maxIterationNumber}
                   crossoverProbability={crossoverProbability}
                   mutationProbability={mutationProbability}
+                  spareFittest={spareFittest}
+                  populationSize={populationSize}
+                  handleChangeSpareFittest={handleChangeSpareFittest}
                   handleChangeCrossoverProbability={
                     handleChangeCrossoverProbability
                   }
@@ -84,6 +91,7 @@ class Knapsack extends Component {
                   handleSelectPair={handleSelectPair}
                   handleSelectComparator={handleSelectComparator}
                   handleChangeIterationNumber={handleChangeIterationNumber}
+                  handleChangePopulationSize={handleChangePopulationSize}
                 />
                 <button
                   disabled={this.state.isRunning}
@@ -174,7 +182,7 @@ class Knapsack extends Component {
                       };
 
                       // Seed generation
-                      const seed = generateSeed(3);
+                      const seed = generateSeed(populationSize);
 
                       // Will be called at each iteration
                       const iterationCallback = ({
@@ -190,6 +198,8 @@ class Knapsack extends Component {
 
                         return true;
                       };
+
+                      algo.setSpareFittest(spareFittest);
 
                       algo.setSeed(seed);
 

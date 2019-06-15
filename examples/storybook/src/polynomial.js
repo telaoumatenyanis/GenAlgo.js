@@ -100,12 +100,16 @@ class Polynomial extends Component {
             maxIterationNumber,
             crossoverProbability,
             mutationProbability,
+            spareFittest,
+            populationSize,
+            handleChangeSpareFittest,
             handleChangeCrossoverProbability,
             handleChangeMutationProbability,
             handleSelectSingle,
             handleSelectPair,
             handleSelectComparator,
             handleChangeIterationNumber,
+            handleChangePopulationSize,
             handleError
           }) => (
             <React.Fragment>
@@ -134,12 +138,16 @@ class Polynomial extends Component {
               </span>
               <br />
               <Parameters
+                error={error}
                 selectSingle={selectSingle}
                 selectPair={selectPair}
                 comparator={comparator}
                 maxIterationNumber={maxIterationNumber}
                 crossoverProbability={crossoverProbability}
                 mutationProbability={mutationProbability}
+                spareFittest={spareFittest}
+                populationSize={populationSize}
+                handleChangeSpareFittest={handleChangeSpareFittest}
                 handleChangeCrossoverProbability={
                   handleChangeCrossoverProbability
                 }
@@ -150,6 +158,7 @@ class Polynomial extends Component {
                 handleSelectPair={handleSelectPair}
                 handleSelectComparator={handleSelectComparator}
                 handleChangeIterationNumber={handleChangeIterationNumber}
+                handleChangePopulationSize={handleChangePopulationSize}
               />
 
               <button
@@ -178,7 +187,11 @@ class Polynomial extends Component {
                     };
 
                     // Seed generation
-                    const seed = rangeStep(10, -10000, 10000);
+                    const seed = rangeStep(
+                      20000 / populationSize,
+                      -10000,
+                      10000
+                    );
 
                     const plotSeed = rangeStep(0.05, -100, 100);
 
@@ -258,6 +271,8 @@ class Polynomial extends Component {
                         algo.setSelectPairFunction(tournament3Pair);
                         break;
                     }
+
+                    algo.setSpareFittest(spareFittest);
 
                     algo.setIterationCallback(iterationCallback);
 

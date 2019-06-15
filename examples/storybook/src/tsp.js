@@ -38,6 +38,7 @@ class TSP extends Component {
     super(props);
     this.state = {
       bestFitness: "",
+      fitness: "",
       elapsedTime: "",
       iterationNumber: "",
       isRunning: false,
@@ -51,17 +52,24 @@ class TSP extends Component {
     this.problemCtx = this.problemCanvas.getContext("2d");
     this.solutionCanvas = document.getElementById("solution");
     this.solutionCtx = this.solutionCanvas.getContext("2d");
+    this.problemBestCanvas = document.getElementById("problemBest");
+    this.problemBestCtx = this.problemBestCanvas.getContext("2d");
+    this.solutionBestCanvas = document.getElementById("solutionBest");
+    this.solutionBestCtx = this.solutionBestCanvas.getContext("2d");
+
     this.problem = this.generateProblem();
-    this.drawProblem();
+
+    this.drawProblem(this.problemCtx);
+    this.drawProblem(this.problemBestCtx);
   }
 
-  drawProblem() {
-    this.problemCtx.fillStyle = "#000";
+  drawProblem(ctx) {
+    ctx.fillStyle = "#000";
 
     for (const city of this.problem) {
-      this.problemCtx.beginPath();
-      this.problemCtx.arc(city.x, city.y, 5, 0, 2 * Math.PI);
-      this.problemCtx.stroke();
+      ctx.beginPath();
+      ctx.arc(city.x, city.y, 5, 0, 2 * Math.PI);
+      ctx.stroke();
     }
   }
 
@@ -69,15 +77,15 @@ class TSP extends Component {
     canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
   }
 
-  drawIndividual(individual) {
-    this.solutionCtx.fillStyle = "#000";
+  drawIndividual(ctx, individual) {
+    ctx.fillStyle = "#000";
 
-    this.solutionCtx.beginPath();
+    ctx.beginPath();
     for (const cityNumber of individual) {
       const city = this.problem[cityNumber];
-      this.solutionCtx.lineTo(city.x, city.y);
+      ctx.lineTo(city.x, city.y);
     }
-    this.solutionCtx.stroke();
+    ctx.stroke();
   }
 
   generateProblem(cityNumber = 20) {
@@ -87,6 +95,26 @@ class TSP extends Component {
       problem.push({
         x: Math.floor(Math.random() * this.problemCanvas.offsetWidth),
         y: Math.floor(Math.random() * this.problemCanvas.offsetHeight)
+      });
+    }
+
+    return problem;
+  }
+
+  generateCircleProblem(cityNumber = 20) {
+    const problem = [];
+
+    const centerX = this.problemCanvas.offsetWidth / 2;
+    const centerY = this.problemCanvas.offsetHeight / 2;
+
+    const radius = 60;
+
+    for (let i = 0; i < cityNumber; i++) {
+      const random = Math.random();
+
+      problem.push({
+        x: centerX + radius * Math.cos((2 * Math.PI * i) / cityNumber),
+        y: centerY + radius * Math.sin((2 * Math.PI * i) / cityNumber)
       });
     }
 
@@ -106,12 +134,16 @@ class TSP extends Component {
               maxIterationNumber,
               crossoverProbability,
               mutationProbability,
+              spareFittest,
+              populationSize,
+              handleChangeSpareFittest,
               handleChangeCrossoverProbability,
               handleChangeMutationProbability,
               handleSelectSingle,
               handleSelectPair,
               handleSelectComparator,
               handleChangeIterationNumber,
+              handleChangePopulationSize,
               handleError
             }) => (
               <React.Fragment>
@@ -124,6 +156,9 @@ class TSP extends Component {
                   maxIterationNumber={maxIterationNumber}
                   crossoverProbability={crossoverProbability}
                   mutationProbability={mutationProbability}
+                  spareFittest={spareFittest}
+                  populationSize={populationSize}
+                  handleChangeSpareFittest={handleChangeSpareFittest}
                   handleChangeCrossoverProbability={
                     handleChangeCrossoverProbability
                   }
@@ -134,20 +169,42 @@ class TSP extends Component {
                   handleSelectPair={handleSelectPair}
                   handleSelectComparator={handleSelectComparator}
                   handleChangeIterationNumber={handleChangeIterationNumber}
+                  handleChangePopulationSize={handleChangePopulationSize}
                 />
                 <button
                   disabled={this.state.isRunning}
                   onClick={() => {
                     this.clearCtx(this.problemCanvas);
                     this.clearCtx(this.solutionCanvas);
+                    this.clearCtx(this.problemBestCanvas);
+                    this.clearCtx(this.solutionBestCanvas);
                     this.values = [];
                     this.problem = this.generateProblem();
-                    this.drawProblem();
+                    this.drawProblem(this.problemCtx);
+                    this.drawProblem(this.problemBestCtx);
                     this.forceUpdate();
                   }}
                 >
-                  Generate problem
+                  Random problem
                 </button>
+                <button
+                  disabled={this.state.isRunning}
+                  onClick={() => {
+                    this.clearCtx(this.problemCanvas);
+                    this.clearCtx(this.solutionCanvas);
+                    this.clearCtx(this.problemBestCanvas);
+                    this.clearCtx(this.solutionBestCanvas);
+
+                    this.values = [];
+                    this.problem = this.generateCircleProblem();
+                    this.drawProblem(this.problemCtx);
+                    this.drawProblem(this.problemBestCtx);
+                    this.forceUpdate();
+                  }}
+                >
+                  Circle problem
+                </button>
+                <br />
                 <button
                   disabled={this.state.isRunning}
                   onClick={async () => {
@@ -157,6 +214,7 @@ class TSP extends Component {
                         crossoverProbability: crossoverProbability,
                         iterationNumber: maxIterationNumber
                       });
+                      await this.setState({ bestFitness: "" });
 
                       // Function used to mutate an individual
                       const mutation = individual => {
@@ -229,7 +287,7 @@ class TSP extends Component {
                       };
 
                       // Seed generation
-                      const seed = generateSeed(10);
+                      const seed = generateSeed(populationSize);
 
                       // Will be called at each iteration
                       const iterationCallback = ({
@@ -238,13 +296,26 @@ class TSP extends Component {
                         iterationNumber
                       }) => {
                         this.values.push(bestIndividual.fitness);
+
                         this.setState({
-                          bestFitness: bestIndividual.fitness,
+                          bestFitness:
+                            this.state.bestFitness == ""
+                              ? bestIndividual.fitness
+                              : algo.fitnessComparator(
+                                  bestIndividual.fitness,
+                                  this.state.bestFitness
+                                )
+                              ? bestIndividual.fitness
+                              : this.state.bestFitness,
+                          fitness: bestIndividual.fitness,
                           elapsedTime,
                           iterationNumber
                         });
                         this.clearCtx(this.solutionCanvas);
-                        this.drawIndividual(bestIndividual.entity);
+                        this.drawIndividual(
+                          this.solutionCtx,
+                          bestIndividual.entity
+                        );
 
                         return true;
                       };
@@ -303,6 +374,8 @@ class TSP extends Component {
                           break;
                       }
 
+                      algo.setSpareFittest(spareFittest);
+
                       algo.setIterationCallback(iterationCallback);
 
                       algo.setResultSize(1);
@@ -311,7 +384,6 @@ class TSP extends Component {
 
                       this.values = [];
 
-                      algo.setSpareFittest(true);
                       const result = await algo.start();
 
                       this.setState({
@@ -319,7 +391,7 @@ class TSP extends Component {
                         result: result[0].entity
                       });
                       this.clearCtx(this.solutionCanvas);
-                      this.drawIndividual(result[0].entity);
+                      this.drawIndividual(this.solutionCtx, result[0].entity);
                     } catch (e) {
                       console.error(e);
                     }
@@ -333,21 +405,35 @@ class TSP extends Component {
                 <span>Elapsed Time : {this.state.elapsedTime}</span>
                 <br />
                 <span>Best Fitness : {this.state.bestFitness}</span>
+                <br />
+                <span>Generation Fitness : {this.state.fitness}</span>
               </React.Fragment>
             )}
           </ParametersProvider>
         </div>
         <br />
-        <div style={{ width: "100%", position: "relative", height: 150 }}>
-          <canvas style={{ position: "absolute" }} id="problem"></canvas>
-          <canvas style={{ position: "absolute" }} id="solution"></canvas>
+        <hr style={{ width: "100%" }} />
+        <div style={{ display: "flex", marginBottom: 30 }}>
+          <div style={{ width: "100%", position: "relative", height: 150 }}>
+            Generation best:
+            <br />
+            <canvas style={{ position: "absolute" }} id="problem"></canvas>
+            <canvas style={{ position: "absolute" }} id="solution"></canvas>
+          </div>
+          <div style={{ width: "100%", position: "relative", height: 150 }}>
+            Best ever found:
+            <br />
+            <canvas style={{ position: "absolute" }} id="problemBest"></canvas>
+            <canvas style={{ position: "absolute" }} id="solutionBest"></canvas>
+          </div>
         </div>
         <div style={{ width: "100%", position: "relative" }}>
+          Generation fitness: <br />
           <FitnessVisualizer
             values={this.values}
             width={500}
             height={150}
-            verticalScale={0.01}
+            verticalScale={0.02}
             horizontalScale={0.5}
           />
         </div>

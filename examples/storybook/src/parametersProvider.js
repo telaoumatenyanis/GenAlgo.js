@@ -8,7 +8,9 @@ class ParametersProvider extends Component {
     comparator: "max",
     mutationProbability: 0.2,
     crossoverProbability: 0.8,
-    maxIterationNumber: 100
+    maxIterationNumber: 100,
+    populationSize: 10,
+    spareFittest: true
   };
 
   handleSelectSingle = event => {
@@ -31,6 +33,10 @@ class ParametersProvider extends Component {
     this.setState({ mutationProbability: value });
   };
 
+  handleChangeSpareFittest = event => {
+    this.setState({ spareFittest: !this.state.spareFittest });
+  };
+
   handleChangeIterationNumber = event => {
     try {
       if (event.target.value != "") {
@@ -38,6 +44,19 @@ class ParametersProvider extends Component {
         this.setState({ maxIterationNumber: number });
       } else {
         this.setState({ maxIterationNumber: 0 });
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  handleChangePopulationSize = event => {
+    try {
+      if (event.target.value != "") {
+        const number = parseInt(event.target.value);
+        this.setState({ populationSize: number });
+      } else {
+        this.setState({ populationSize: 0 });
       }
     } catch (e) {
       console.error(e);
@@ -56,6 +75,8 @@ class ParametersProvider extends Component {
       handleChangeCrossoverProbability: this.handleChangeCrossoverProbability,
       handleChangeMutationProbability: this.handleChangeMutationProbability,
       handleChangeIterationNumber: this.handleChangeIterationNumber,
+      handleChangeSpareFittest: this.handleChangeSpareFittest,
+      handleChangePopulationSize: this.handleChangePopulationSize,
       handleError: this.handleError,
       error: this.state.error,
       selectSingle: this.state.selectSingle,
@@ -63,7 +84,9 @@ class ParametersProvider extends Component {
       comparator: this.state.comparator,
       maxIterationNumber: this.state.maxIterationNumber,
       crossoverProbability: this.state.crossoverProbability,
-      mutationProbability: this.state.mutationProbability
+      mutationProbability: this.state.mutationProbability,
+      spareFittest: this.state.spareFittest,
+      populationSize: this.state.populationSize
     });
   }
 }
