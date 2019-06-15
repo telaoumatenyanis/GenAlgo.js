@@ -93,39 +93,6 @@ class TSP extends Component {
     return problem;
   }
 
-  handleSelectSingle(event) {
-    this.setState({ selectSingleFunction: event.target.value });
-  }
-
-  handleSelectPair(event) {
-    this.setState({ selectPairFunction: event.target.value });
-  }
-
-  handleSelectComparator(event) {
-    this.setState({ comparator: event.target.value });
-  }
-
-  handleChangeCrossoverProbability(value) {
-    this.setState({ crossoverProbability: value });
-  }
-
-  handleChangeMutationProbability(value) {
-    this.setState({ mutationProbability: value });
-  }
-
-  handleChangeIterationNumber(event) {
-    try {
-      if (event.target.value != "") {
-        const number = parseInt(event.target.value);
-        this.setState({ maxIterationNumber: number });
-      } else {
-        this.setState({ maxIterationNumber: 0 });
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  }
-
   render() {
     return (
       <div style={{ display: "flex", flexDirection: "column" }}>

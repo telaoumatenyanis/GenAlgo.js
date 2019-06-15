@@ -40,7 +40,12 @@ export default class FitnessVisualizer extends Component {
   render() {
     const { height, width } = this.props;
     return (
-      <canvas id="fitnessVisualizer" height={height} width={width}></canvas>
+      <canvas
+        style={{ border: "1px solid black" }}
+        id="fitnessVisualizer"
+        height={height}
+        width={width}
+      ></canvas>
     );
   }
 }
