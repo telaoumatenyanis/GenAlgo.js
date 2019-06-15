@@ -51,7 +51,7 @@ class TSP extends Component {
     this.problemCtx = this.problemCanvas.getContext("2d");
     this.solutionCanvas = document.getElementById("solution");
     this.solutionCtx = this.solutionCanvas.getContext("2d");
-    this.problem = this.generateProblem(20);
+    this.problem = this.generateProblem();
     this.drawProblem();
   }
 
@@ -80,7 +80,7 @@ class TSP extends Component {
     this.solutionCtx.stroke();
   }
 
-  generateProblem(cityNumber) {
+  generateProblem(cityNumber = 20) {
     const problem = [];
 
     for (let i = 0; i < cityNumber; i++) {
@@ -135,7 +135,19 @@ class TSP extends Component {
                   handleSelectComparator={handleSelectComparator}
                   handleChangeIterationNumber={handleChangeIterationNumber}
                 />
-
+                <button
+                  disabled={this.state.isRunning}
+                  onClick={() => {
+                    this.clearCtx(this.problemCanvas);
+                    this.clearCtx(this.solutionCanvas);
+                    this.values = [];
+                    this.problem = this.generateProblem();
+                    this.drawProblem();
+                    this.forceUpdate();
+                  }}
+                >
+                  Generate problem
+                </button>
                 <button
                   disabled={this.state.isRunning}
                   onClick={async () => {
