@@ -7,25 +7,28 @@ import delay from "../utils/delay.js";
 
 const cloneDeep = rfdc();
 
-type Parameters = {
-  seed: any[],
-  fitnessEvaluator: any => number,
+type Individual<T> = { entity: T, fitness: number };
+
+type Parameters<T> = {
+  seed: T[],
+  fitnessEvaluator: T => number,
   fitnessComparator: (number, number) => boolean,
   iterationCallback: ({
     iterationNumber: number,
     elapsedTime: number,
-    bestIndividual: { entity: any, fitness: number }
+    bestIndividual: Individual<T>,
+    population: Individual<T>[]
   }) => boolean,
-  mutationFunction: any => any,
-  crossoverFunction: (any, any) => [any, any],
+  mutationFunction: T => T,
+  crossoverFunction: (T, T) => [T, T],
   selectSingleFunction: (
-    Array<{ entity: any, fitness: number }>,
+    Array<Individual<T>>,
     (number, number) => boolean
-  ) => any,
+  ) => T,
   selectPairFunction: (
-    Array<{ entity: any, fitness: number }>,
+    Array<Individual<T>>,
     (number, number) => boolean
-  ) => [any, any],
+  ) => [T, T],
   iterationNumber: number,
   mutationProbability: number,
   crossoverProbability: number,
@@ -36,31 +39,32 @@ type Parameters = {
 /**
  * Gen algo main class, used to set parameters and start the genetic algorithm
  */
-class GenAlgo {
-  seed: any[];
+class GenAlgo<T> {
+  seed: T[];
   populationSize: number;
-  fitnessEvaluator: any => number;
+  fitnessEvaluator: T => number;
   fitnessComparator: (number, number) => boolean;
   iterationCallback: ({
     iterationNumber: number,
     elapsedTime: number,
-    bestIndividual: { entity: any, fitness: number }
+    bestIndividual: Individual<T>,
+    population: Individual<T>[]
   }) => boolean;
-  mutationFunction: any => any;
-  crossoverFunction: (any, any) => [any, any];
+  mutationFunction: T => T;
+  crossoverFunction: (T, T) => [T, T];
   selectSingleFunction: (
-    Array<{ entity: any, fitness: number }>,
+    Array<Individual<T>>,
     (number, number) => boolean
-  ) => any;
+  ) => T;
   selectPairFunction: (
-    Array<{ entity: any, fitness: number }>,
+    Array<Individual<T>>,
     (number, number) => boolean
-  ) => [any, any];
+  ) => [T, T];
   iterationNumber: number;
   mutationProbability: number;
   crossoverProbability: number;
   spareFittest: boolean;
-  individuals: any[];
+  individuals: T[];
   resultSize: number;
 
   constructor({
@@ -77,7 +81,7 @@ class GenAlgo {
     selectSingleFunction = fittest,
     selectPairFunction,
     resultSize
-  }: Parameters) {
+  }: Parameters<T>) {
     this.iterationNumber = iterationNumber;
     this.mutationProbability = mutationProbability;
     this.crossoverProbability = crossoverProbability;
@@ -130,7 +134,7 @@ class GenAlgo {
    * Set the list of individuals
    * @param seed list of individuals
    */
-  setSeed(seed: any[]): void {
+  setSeed(seed: T[]): void {
     this.seed = seed;
     this.populationSize = this.seed.length;
   }
@@ -139,7 +143,7 @@ class GenAlgo {
    * Set the fitness evaluator used to compute the fitness of an individual
    * @param fitnessEvaluator the function used as a fitnessEvaluator, should take an individual and return a fitness
    */
-  setFitnessEvaluator(fitnessEvaluator: any => number): void {
+  setFitnessEvaluator(fitnessEvaluator: T => number): void {
     this.fitnessEvaluator = fitnessEvaluator;
   }
 
@@ -159,8 +163,8 @@ class GenAlgo {
     iterationCallback: ({
       iterationNumber: number,
       elapsedTime: number,
-      bestIndividual: { entity: any, fitness: number },
-      population: { entity: any, fitness: number }[]
+      bestIndividual: Individual<T>,
+      population: Individual<T>[]
     }) => boolean
   ): void {
     this.iterationCallback = iterationCallback;
@@ -170,7 +174,7 @@ class GenAlgo {
    * Set the function called to mutate an individual
    * @param  mutationFunction function that takes an individual as parameter and returned its mutated version.
    */
-  setMutationFunction(mutationFunction: any => any): void {
+  setMutationFunction(mutationFunction: T => T): void {
     this.mutationFunction = mutationFunction;
   }
 
@@ -179,7 +183,7 @@ class GenAlgo {
    * @param crossoverFunction function that takes two individuals as parameters and return the two children of the crossover
    */
 
-  setCrossoverFunction(crossoverFunction: (any, any) => [any, any]): void {
+  setCrossoverFunction(crossoverFunction: (T, T) => [T, T]): void {
     this.crossoverFunction = crossoverFunction;
   }
 
@@ -189,9 +193,9 @@ class GenAlgo {
    */
   setSelectSingleFunction(
     selectSingleFunction: (
-      Array<{ entity: any, fitness: number }>,
+      Array<Individual<T>>,
       (number, number) => boolean
-    ) => any
+    ) => T
   ): void {
     this.selectSingleFunction = selectSingleFunction;
   }
@@ -202,9 +206,9 @@ class GenAlgo {
    */
   setSelectPairFunction(
     selectPairFunction: (
-      Array<{ entity: any, fitness: number }>,
+      Array<Individual<T>>,
       (number, number) => boolean
-    ) => [any, any]
+    ) => [T, T]
   ): void {
     this.selectPairFunction = selectPairFunction;
   }
@@ -257,9 +261,7 @@ class GenAlgo {
    * @param  individuals a list of individual
    * @return             a list of object having the entity and fitness attributes
    */
-  _cloneAndSortIndividuals(
-    individuals: any[]
-  ): Array<{ entity: any, fitness: number }> {
+  _cloneAndSortIndividuals(individuals: T[]): Array<Individual<T>> {
     return individuals
       .map(individual => ({
         entity: cloneDeep(individual),
@@ -279,7 +281,7 @@ class GenAlgo {
    * @param  individual the individual to mutate
    * @return            the mutated individual
    */
-  _mutateIndividual(individual: any): any {
+  _mutateIndividual(individual: T): T {
     return Math.random() <= this.mutationProbability &&
       this.mutationFunction != null
       ? this.mutationFunction(cloneDeep(individual))
@@ -297,7 +299,7 @@ class GenAlgo {
   /**
    * Start the genetic algorithm if the required parameters has been set
    */
-  async start(callback: (any, any) => void): any {
+  async start(): Promise<Array<Individual<T>>> {
     this._checkParameters();
 
     /**
@@ -416,9 +418,7 @@ class GenAlgo {
         ? population.slice(0, this.resultSize)
         : population;
 
-    return callback != null
-      ? callback(undefined, populationToReturn)
-      : populationToReturn;
+    return populationToReturn;
   }
 }
 
