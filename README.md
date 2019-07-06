@@ -29,6 +29,7 @@ Website with examples in progress (polynomial extrema, bin packing, maybe travel
 Polynomial extrema is available in the storybook :
 
 ```
+npm install
 cd examples/storybook
 npm install
 npm run storybook
